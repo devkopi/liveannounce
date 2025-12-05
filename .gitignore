@@ -1,0 +1,15 @@
+# Archivos compilados
+target/
+*.jar
+*.class
+
+# Configuración local del servidor
+config.yml
+
+# IDE
+.idea/
+*.iml
+
+# Sistema
+.DS_Store
+Thumbs.db

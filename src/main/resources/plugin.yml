@@ -1,0 +1,32 @@
+name: LiveAnnounce
+version: 1.0.0
+main: org.ccoding.liveannounce.LiveAnnounce
+api-version: "1.16"
+author: ccoding
+description: "Plugin para anunciar directos en el servidor"
+
+commands:
+  directo:
+    description: "Anuncia tu directo a todo el servidor"
+    usage: "/directo <plataforma> <canal>"
+    aliases: [live]
+    permission: liveannounce.directo
+    permission-message: "No tienes permiso."
+
+  liveannounce:
+    description: "Comandos principales del plugin"
+    usage: "/liveannounce [help|version]"
+    aliases: [la]
+
+permissions:
+  # /directo (solo streamers)
+  liveannounce.directo:
+    description: "Permite usar /directo"
+    default: op
+
+  # Bypass / Administradores
+  liveannounce.admin:
+    description: "Permisos de administración"
+    default: op
+    children:
+      liveannounce.directo: true
