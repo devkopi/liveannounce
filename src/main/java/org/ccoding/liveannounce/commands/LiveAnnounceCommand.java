@@ -82,7 +82,7 @@ public class LiveAnnounceCommand implements CommandExecutor {
         ChatUtils.send(sender, "&6&lLiveAnnounce v" + plugin.getDescription().getVersion());
         ChatUtils.send(sender, "");
         ChatUtils.send(sender, "&eComandos:");
-        ChatUtils.send(sender, "&7• &f/directo <plataforma> <canal> &8- &7Anuncia un directo");
+        ChatUtils.send(sender, "&7• &f/directo <link>&8- &7Anuncia un directo");
         ChatUtils.send(sender, "&7• &f/la help &8- &7Muestra esta ayuda");
         ChatUtils.send(sender, "&7• &f/la reload &8- &7Recarga configuración");
         ChatUtils.send(sender, "&7• &f/la version &8- &7Muestra la versión");
