@@ -42,7 +42,7 @@ public class DirectoCommand implements CommandExecutor {
         // Verificar que sea un link válido
         if (!isValidLink(link)) {
             ChatUtils.send(player, "&c¡ERROR! &fDebes proporcionar un &elink &fválido.");
-            ChatUtils.send(player, "&fEjemplo: &7/directo https://twitch.tv/auracraftnw");
+            ChatUtils.send(player, "&fEjemplo: &7/directo https://twitch.tv/username");
             return true;
         }
 
@@ -124,10 +124,10 @@ public class DirectoCommand implements CommandExecutor {
         ChatUtils.send(player, "&eUso: &f/directo <link>");
         ChatUtils.send(player, "");
         ChatUtils.send(player, "&6Ejemplos:");
-        ChatUtils.send(player, "&7• &f/directo https://twitch.tv/auracraftnw");
-        ChatUtils.send(player, "&7• &f/directo https://youtube.com/live/auracraftnw");
-        ChatUtils.send(player, "&7• &f/directo https://kick.com/auracraftnw");
-        ChatUtils.send(player, "&7• &f/directo https://tiktok.com/@auracraftnw/live");
+        ChatUtils.send(player, "&7• &f/directo https://twitch.tv/username");
+        ChatUtils.send(player, "&7• &f/directo https://youtube.com/live/username");
+        ChatUtils.send(player, "&7• &f/directo https://kick.com/username");
+        ChatUtils.send(player, "&7• &f/directo https://tiktok.com/@username/live");
         ChatUtils.send(player, "");
         ChatUtils.send(player, "&7El plugin detectará automáticamente la plataforma.");
         ChatUtils.send(player, ChatUtils.getLine());
