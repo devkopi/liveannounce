@@ -35,6 +35,6 @@ Join now! https://twitch.tv/ccoding
 ```
 
 # Installation
-1. Download the plugin from [Spigot]() | [Modrinth]()
-2. Place the plugin in the `plugins` folder of your Spigot server
+1. Download the plugin from [Spigot](https://www.spigotmc.org/resources/liveannouncer-stream-alert-system-%E3%80%8C1-8-1-21%E3%80%8D.130601/) | [Modrinth]()
+2. Place the plugin in the `plugins` folder of your Spigot servers
 3. Restart/Start your server
