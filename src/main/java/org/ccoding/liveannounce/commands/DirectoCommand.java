@@ -7,6 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.utils.ChatUtils;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class DirectoCommand implements CommandExecutor {
 
@@ -50,10 +54,7 @@ public class DirectoCommand implements CommandExecutor {
         PlatformInfo platform = detectPlatform(link);
 
 
-        String mensaje = createMessage(player.getName(), platform, link);
-
-        // Envío global
-        ChatUtils.broadcastWithSpacers(mensaje);
+        sendClickableBroadcast(player.getName(), platform, link);
 
         return true;
     }
@@ -107,14 +108,36 @@ public class DirectoCommand implements CommandExecutor {
     }
 
     // Crear mensaje con el mismo FORMATO visual
-    private String createMessage(String playerName, PlatformInfo platform, String link) {
-        return ChatUtils.color(
-                ChatUtils.getLine() + "\n" +
-                        "&f⚡ " + platform.color + "&l¡DIRECTO EN " + platform.name.toUpperCase() + "! &f⚡\n" +
-                        "&f" + playerName + " &7está transmitiendo en vivo\n" +
-                        "&7¡Únete ahora! " + platform.color + "&n" + link + "\n" +
-                        ChatUtils.getLine()
-        );
+    private void sendClickableBroadcast(String playerName, PlatformInfo platform, String link) {
+
+        TextComponent line1 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
+
+        TextComponent title = new TextComponent(ChatUtils.color(
+                "&f⚡ " + platform.color + "&l¡DIRECTO EN " + platform.name.toUpperCase() + "! &f⚡"
+        ));
+
+        TextComponent desc = new TextComponent(ChatUtils.color(
+                "&f" + playerName + " &7está transmitiendo en vivo"
+        ));
+
+        TextComponent url = new TextComponent(ChatUtils.color(
+                "&7¡Únete ahora! " + platform.color + "&n" + link
+        ));
+        url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link));
+        url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder(ChatUtils.color("&e¡Haz clic para abrir!")).create()
+        ));
+
+        TextComponent line2 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
+
+        // Envío global
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.spigot().sendMessage(line1);
+            p.spigot().sendMessage(title);
+            p.spigot().sendMessage(desc);
+            p.spigot().sendMessage(url);
+            p.spigot().sendMessage(line2);
+        }
     }
 
     private void showHelp(Player player) {
