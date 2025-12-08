@@ -28,11 +28,11 @@ public class LiveAnnounceCommand implements CommandExecutor {
         switch (subCommand) {
             case "reload":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.send(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
                     return true;
                 }
-                plugin.reloadConfig();
-                ChatUtils.send(sender, "&cConfiguración recargada.");
+                plugin.reloadPlugin();
+                ChatUtils.sendMessage(sender, "&cConfiguración recargada.");
                 break;
 
             case "version":
@@ -42,35 +42,35 @@ public class LiveAnnounceCommand implements CommandExecutor {
 
             case "enable":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.send(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
                     return true;
                 }
                 plugin.getConfig().set("enabled", true);
                 plugin.saveConfig();
-                ChatUtils.send(sender, "&aPlugin habilitado.");
+                ChatUtils.sendMessage(sender, "&aPlugin habilitado.");
                 break;
 
             case "disable":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.send(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
                     return true;
                 }
                 plugin.getConfig().set("enabled", false);
                 plugin.saveConfig();
-                ChatUtils.send(sender, "&cPlugin deshabilitado.");
+                ChatUtils.sendMessage(sender, "&cPlugin deshabilitado.");
                 break;
 
             case "status":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.send(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
                     return true;
                 }
                 boolean enabled = plugin.getConfig().getBoolean("enabled", true);
-                ChatUtils.send(sender, "&7Estado: " + (enabled ? "&aHabilitado" : "&cDeshabilitado"));
+                ChatUtils.sendMessage(sender, "&7Estado: " + (enabled ? "&aHabilitado" : "&cDeshabilitado"));
                 break;
 
             default:
-                ChatUtils.send(sender, "&cSubcomando no válido. Usa /la help");
+                ChatUtils.sendMessage(sender, "&cSubcomando no válido. Usa /la help");
                 break;
         }
 

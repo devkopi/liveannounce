@@ -31,7 +31,7 @@ public class DirectoCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("liveannounce.directo") && !player.isOp()) {
-            ChatUtils.send(player, "&c¡ERROR! &fNo tienes permiso.");
+            ChatUtils.sendMessage(player, "&c¡ERROR! &fNo tienes permiso.");
             return true;
         }
 
@@ -45,8 +45,8 @@ public class DirectoCommand implements CommandExecutor {
 
         // Verificar que sea un link válido
         if (!isValidLink(link)) {
-            ChatUtils.send(player, "&c¡ERROR! &fDebes proporcionar un &elink &fválido.");
-            ChatUtils.send(player, "&fEjemplo: &7/directo https://twitch.tv/username");
+            ChatUtils.sendMessage(player, "&c¡ERROR! &fDebes proporcionar un &elink &fválido.");
+            ChatUtils.sendMessage(player, "&fEjemplo: &7/directo https://twitch.tv/username");
             return true;
         }
 
