@@ -1,5 +1,5 @@
 name: LiveAnnounce
-version: 1.0.0
+version: 1.0.3
 main: org.ccoding.liveannounce.LiveAnnounce
 api-version: "1.16"
 author: ccoding
@@ -9,9 +9,8 @@ commands:
   directo:
     description: "Anuncia tu directo a todo el servidor"
     usage: "/directo <plataforma> <canal>"
-    aliases: [live]
+    aliases: [live, stream, livestream]
     permission: liveannounce.directo
-    permission-message: "No tienes permiso."
 
   liveannounce:
     description: "Comandos principales del plugin"

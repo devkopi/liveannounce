@@ -45,31 +45,4 @@ public class ChatUtils {
     public static String getLine() {
         return color("&8&m--------------------------------------------------");
     }
-
-    // Espaciador
-    public static void spacer(CommandSender sender) {
-        send(sender, "");
-    }
-
-    // Broadcast con espaciadores
-    public static void broadcastWithSpacers(String message) {
-        broadcast("");
-        broadcast(message);
-        broadcast("");
-    }
-
-    // ========== MENSAJES ESPECÍFICOS DEL PLUGIN ==========
-
-    // Crear mensaje de anuncio de directo
-    public static String createAnnouncement(String playerName, String platformDisplay,
-                                            String platformColor, String channel, String link) {
-        return color(
-                getLine() + "\n" +
-                        "&f⚡ " + platformColor + "&l¡DIRECTO EN " + platformDisplay.toUpperCase() + "! &f⚡\n" +
-                        "&fJugador: &e" + playerName + "\n" +
-                        "&fCanal: " + platformColor + channel + "\n" +
-                        "&fEnlace: &e&n" + link + "\n" +
-                        getLine()
-        );
-    }
 }

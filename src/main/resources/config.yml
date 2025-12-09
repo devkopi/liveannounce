@@ -1,5 +1,24 @@
-# LiveAnnounce Configuration
-enabled: true
+# LiveAnnounce Configuration v1.0.3
 
-# Prefix Configuration
+# ========== BASIC SETTINGS ==========
+enabled: true
 prefix: "&8[&bLiveAnnounce&8] &7"
+
+# ========== CONFIGURABLE MESSAGES ==========
+messages:
+  # Error messages
+  unknown-command: "&cInvalid subcommand. Use &b/la help"
+  no-permission: "&cYou don't have permission to execute this command."
+  invalid-link: "&cInvalid link.&r &fSupported platforms: Twitch, YouTube, Kick, TikTok"
+  invalid-link-example: "&fExample: &b/directo https://twitch.tv/ccoding"
+  player-only: "&cThis command can only be used by players."
+  command-not-found: "&cCommand not found. Use /la help"
+
+  # Success messages
+  reloaded: "&aConfiguration reloaded successfully."
+  enabled: "&aPlugin enabled."
+  disabled: "&cPlugin disabled."
+
+  # Status messages
+  status-enabled: "&7Status: &aEnabled"
+  status-disabled: "&7Status: &cDisabled"

@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -24,14 +25,14 @@ public class DirectoCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cSolo jugadores.");
+            sender.sendMessage(MessageManager.get("player-only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("liveannounce.directo") && !player.isOp()) {
-            ChatUtils.sendMessage(player, "&c¡ERROR! &fNo tienes permiso.");
+            ChatUtils.sendMessage(player, MessageManager.get("no-permission"));
             return true;
         }
 
@@ -45,8 +46,8 @@ public class DirectoCommand implements CommandExecutor {
 
         // Verificar que sea un link válido
         if (!isValidLink(link)) {
-            ChatUtils.sendMessage(player, "&c¡ERROR! &fDebes proporcionar un &elink &fválido.");
-            ChatUtils.sendMessage(player, "&fEjemplo: &7/directo https://twitch.tv/username");
+            ChatUtils.sendMessage(player, MessageManager.get("invalid-link"));
+            ChatUtils.sendMessage(player, MessageManager.get("invalid-link-example"));
             return true;
         }
 
@@ -113,24 +114,24 @@ public class DirectoCommand implements CommandExecutor {
         TextComponent line1 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
 
         TextComponent title = new TextComponent(ChatUtils.color(
-                "&f⚡ " + platform.color + "&l¡DIRECTO EN " + platform.name.toUpperCase() + "! &f⚡"
+                "&f⚡ " + platform.color + "&lLIVE ON " + platform.name.toUpperCase() + "! &f⚡"
         ));
 
         TextComponent desc = new TextComponent(ChatUtils.color(
-                "&f" + playerName + " &7está transmitiendo en vivo"
+                "&f" + playerName + " &7is streaming live"
         ));
 
         TextComponent url = new TextComponent(ChatUtils.color(
-                "&7¡Únete ahora! " + platform.color + "&n" + link
+                "&7Join now! " + platform.color + "&n" + link
         ));
         url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link));
         url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(ChatUtils.color("&e¡Haz clic para abrir!")).create()
+                new ComponentBuilder(ChatUtils.color("&eClick to open!")).create()
         ));
 
         TextComponent line2 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
 
-        // Envío global
+        // Global broadcast
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.spigot().sendMessage(line1);
             p.spigot().sendMessage(title);
@@ -142,17 +143,21 @@ public class DirectoCommand implements CommandExecutor {
 
     private void showHelp(Player player) {
         ChatUtils.send(player, ChatUtils.getLine());
-        ChatUtils.send(player, "&6&lAYUDA - /directo");
+        ChatUtils.send(player, "&6&lHELP - Stream Announcement");
         ChatUtils.send(player, "");
-        ChatUtils.send(player, "&eUso: &f/directo <link>");
+        ChatUtils.send(player, "&eCommands:");
+        ChatUtils.send(player, "&7• &f/directo <link>");
+        ChatUtils.send(player, "&7• &f/stream <link>");
+        ChatUtils.send(player, "&7• &f/live <link>");
+        ChatUtils.send(player, "&7• &f/livestream <link>");
         ChatUtils.send(player, "");
-        ChatUtils.send(player, "&6Ejemplos:");
-        ChatUtils.send(player, "&7• &f/directo https://twitch.tv/username");
-        ChatUtils.send(player, "&7• &f/directo https://youtube.com/live/username");
-        ChatUtils.send(player, "&7• &f/directo https://kick.com/username");
+        ChatUtils.send(player, "&6Examples:");
+        ChatUtils.send(player, "&7• &f/stream https://twitch.tv/username");
+        ChatUtils.send(player, "&7• &f/live https://youtube.com/live/username");
+        ChatUtils.send(player, "&7• &f/broadcast https://kick.com/username");
         ChatUtils.send(player, "&7• &f/directo https://tiktok.com/@username/live");
         ChatUtils.send(player, "");
-        ChatUtils.send(player, "&7El plugin detectará automáticamente la plataforma.");
+        ChatUtils.send(player, "&7The plugin will automatically detect the platform.");
         ChatUtils.send(player, ChatUtils.getLine());
     }
 }

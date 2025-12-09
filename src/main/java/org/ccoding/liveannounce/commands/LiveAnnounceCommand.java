@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
 public class LiveAnnounceCommand implements CommandExecutor {
@@ -28,11 +29,11 @@ public class LiveAnnounceCommand implements CommandExecutor {
         switch (subCommand) {
             case "reload":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
                     return true;
                 }
                 plugin.reloadPlugin();
-                ChatUtils.sendMessage(sender, "&cConfiguración recargada.");
+                ChatUtils.sendMessage(sender, MessageManager.get("reloaded"));
                 break;
 
             case "version":
@@ -42,35 +43,37 @@ public class LiveAnnounceCommand implements CommandExecutor {
 
             case "enable":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
                     return true;
                 }
                 plugin.getConfig().set("enabled", true);
                 plugin.saveConfig();
-                ChatUtils.sendMessage(sender, "&aPlugin habilitado.");
+                ChatUtils.sendMessage(sender, MessageManager.get("enabled"));
                 break;
 
             case "disable":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
                     return true;
                 }
                 plugin.getConfig().set("enabled", false);
                 plugin.saveConfig();
-                ChatUtils.sendMessage(sender, "&cPlugin deshabilitado.");
+                ChatUtils.sendMessage(sender, MessageManager.get("disabled"));
                 break;
 
             case "status":
                 if (!sender.hasPermission("liveannounce.admin")) {
-                    ChatUtils.sendMessage(sender, "&cNo tienes permiso.");
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
                     return true;
                 }
                 boolean enabled = plugin.getConfig().getBoolean("enabled", true);
-                ChatUtils.sendMessage(sender, "&7Estado: " + (enabled ? "&aHabilitado" : "&cDeshabilitado"));
+
+                String statusKey = enabled ? "status-enabled" : "status-disabled";
+                ChatUtils.sendMessage(sender, MessageManager.get(statusKey));
                 break;
 
             default:
-                ChatUtils.sendMessage(sender, "&cSubcomando no válido. Usa /la help");
+                ChatUtils.sendMessage(sender, MessageManager.get("unknown-command"));
                 break;
         }
 
@@ -81,16 +84,16 @@ public class LiveAnnounceCommand implements CommandExecutor {
         ChatUtils.send(sender, ChatUtils.getLine());
         ChatUtils.send(sender, "&6&lLiveAnnounce v" + plugin.getDescription().getVersion());
         ChatUtils.send(sender, "");
-        ChatUtils.send(sender, "&eComandos:");
-        ChatUtils.send(sender, "&7• &f/directo <link>&8- &7Anuncia un directo");
-        ChatUtils.send(sender, "&7• &f/la help &8- &7Muestra esta ayuda");
-        ChatUtils.send(sender, "&7• &f/la reload &8- &7Recarga configuración");
-        ChatUtils.send(sender, "&7• &f/la version &8- &7Muestra la versión");
-        ChatUtils.send(sender, "&7• &f/la enable &8- &7Habilita el plugin");
-        ChatUtils.send(sender, "&7• &f/la disable &8- &7Deshabilita el plugin");
-        ChatUtils.send(sender, "&7• &f/la status &8- &7Muestra estado");
+        ChatUtils.send(sender, "&eCommands:");
+        ChatUtils.send(sender, "&7• &f/directo <link>&8- &7Announce a live stream");
+        ChatUtils.send(sender, "&7• &f/la help &8- &7Shows this help");
+        ChatUtils.send(sender, "&7• &f/la reload &8- &7Reloads configuration");
+        ChatUtils.send(sender, "&7• &f/la version &8- &7Shows version");
+        ChatUtils.send(sender, "&7• &f/la enable &8- &7Enables the plugin");
+        ChatUtils.send(sender, "&7• &f/la disable &8- &7Disables the plugin");
+        ChatUtils.send(sender, "&7• &f/la status &8- &7Shows status");
         ChatUtils.send(sender, "");
-        ChatUtils.send(sender, "&eAlias: &f/directo, /la");
+        ChatUtils.send(sender, "&eAliases: &f/directo, /la");
         ChatUtils.send(sender, ChatUtils.getLine());
     }
 
