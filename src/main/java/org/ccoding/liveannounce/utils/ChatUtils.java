@@ -2,8 +2,10 @@ package org.ccoding.liveannounce.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.ccoding.liveannounce.managers.PrefixManager;
 
 public class ChatUtils {
 
@@ -15,14 +17,21 @@ public class ChatUtils {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    // Enviar mensaje ya coloreado
+    // Enviar mensaje ya coloreado (Metodo para NO APLICAR prefijo a mensajes)
     public static void send(CommandSender sender, String message) {
         if (sender != null && message != null) {
             sender.sendMessage(color(message));
         }
     }
 
-    // Broadcast a todos los jugadores
+    // Metodo para aplicarle prefijo a los mensajes
+    public static void sendMessage(CommandSender sender, String message) {
+        if (sender != null && message != null) {
+            sender.sendMessage(color(PrefixManager.get() + message));
+        }
+    }
+
+    // Broadcast a todos los jugadores (Sin prefijo para los anuncios)
     public static void broadcast(String message) {
         if (message != null) {
             Bukkit.broadcastMessage(color(message));
@@ -50,22 +59,6 @@ public class ChatUtils {
     }
 
     // ========== MENSAJES ESPECÍFICOS DEL PLUGIN ==========
-
-    // Mostrar ayuda del comando /directo
-    public static void showDirectoHelp(Player player) {
-        send(player, getLine());
-        send(player, "&6&lAYUDA - /directo");
-        spacer(player);
-        send(player, "&eUso: &f/directo <plataforma> <canal>");
-        send(player, "&7Plataformas: &eTwitch, Youtube, Kick, Tiktok");
-        spacer(player);
-        send(player, "&6Ejemplos:");
-        send(player, "&7• &f/directo twitch AuraCraftNW");
-        send(player, "&7• &f/directo youtube AuraCraftNW");
-        send(player, "&7• &f/directo kick AuraCraftNW");
-        send(player, "&7• &f/directo tiktok AuraCraftNW");
-        send(player, getLine());
-    }
 
     // Crear mensaje de anuncio de directo
     public static String createAnnouncement(String playerName, String platformDisplay,

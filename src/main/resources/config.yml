@@ -1,2 +1,5 @@
 # LiveAnnounce Configuration
 enabled: true
+
+# Prefix Configuration
+prefix: "&8[&bLiveAnnounce&8] &7"

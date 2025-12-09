@@ -3,6 +3,7 @@ package org.ccoding.liveannounce;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
+import org.ccoding.liveannounce.managers.PrefixManager;
 
 public class LiveAnnounce extends JavaPlugin {
 
@@ -14,6 +15,10 @@ public class LiveAnnounce extends JavaPlugin {
 
         // Guardar config por defecto
         saveDefaultConfig();
+        reloadConfig();
+
+        // Cargar el prefijo desde la configuración
+        PrefixManager.load(getConfig());
 
         // Verificar si el plugin está habilitado
         if (!getConfig().getBoolean("enabled", true)) {
@@ -39,5 +44,10 @@ public class LiveAnnounce extends JavaPlugin {
 
     public static LiveAnnounce getInstance() {
         return instance;
+    }
+
+    public void reloadPlugin() {
+        reloadConfig();
+        PrefixManager.load(getConfig());
     }
 }
