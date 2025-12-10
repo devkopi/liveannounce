@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.managers.MessageManager;
+import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.ChatUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -108,36 +109,21 @@ public class DirectoCommand implements CommandExecutor {
         return new PlatformInfo("Directo", "&6");
     }
 
-    // Crear mensaje con el mismo FORMATO visual
+    // Actualizamos para que utilice AnnouncementFormatter y sea editable
     private void sendClickableBroadcast(String playerName, PlatformInfo platform, String link) {
+        // Usar el nuevo formatter
+        TextComponent[] components = AnnouncementFormatter.createAnnouncement(
+                playerName,
+                platform.name,
+                platform.color,
+                link
+        );
 
-        TextComponent line1 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
-
-        TextComponent title = new TextComponent(ChatUtils.color(
-                "&f⚡ " + platform.color + "&lLIVE ON " + platform.name.toUpperCase() + "! &f⚡"
-        ));
-
-        TextComponent desc = new TextComponent(ChatUtils.color(
-                "&f" + playerName + " &7is streaming live"
-        ));
-
-        TextComponent url = new TextComponent(ChatUtils.color(
-                "&7Join now! " + platform.color + "&n" + link
-        ));
-        url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link));
-        url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(ChatUtils.color("&eClick to open!")).create()
-        ));
-
-        TextComponent line2 = new TextComponent(ChatUtils.color(ChatUtils.getLine()));
-
-        // Global broadcast
+        // Envío global
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.spigot().sendMessage(line1);
-            p.spigot().sendMessage(title);
-            p.spigot().sendMessage(desc);
-            p.spigot().sendMessage(url);
-            p.spigot().sendMessage(line2);
+            for (TextComponent component : components) {
+                p.spigot().sendMessage(component);
+            }
         }
     }
 
