@@ -5,6 +5,7 @@ import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
+import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 public class LiveAnnounce extends JavaPlugin {
 
@@ -21,6 +22,7 @@ public class LiveAnnounce extends JavaPlugin {
         // Cargamos los managers
         PrefixManager.load(getConfig());
         MessageManager.setup(getConfig());
+        AnnouncementFormatter.initialize(getConfig());
 
         // Verificar si el plugin está habilitado
         if (!getConfig().getBoolean("enabled", true)) {
@@ -52,5 +54,6 @@ public class LiveAnnounce extends JavaPlugin {
         reloadConfig();
         PrefixManager.load(getConfig());
         MessageManager.reload(getConfig());
+        AnnouncementFormatter.reload(getConfig());
     }
 }

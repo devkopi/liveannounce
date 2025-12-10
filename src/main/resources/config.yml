@@ -22,3 +22,21 @@ messages:
   # Status messages
   status-enabled: "&7Status: &aEnabled"
   status-disabled: "&7Status: &cDisabled"
+
+# ========== PLATFORM COLORS CONFIGURATION ==========
+platform-colors:
+  twitch: "&d"      # Purple
+  youtube: "&c"     # Red
+  kick: "&a"        # Green
+  tiktok: "&b"      # Aqua
+  default: "&6"     # Gold
+
+# ========== ANNOUNCEMENT FORMAT CONFIGURATION ==========
+announcement-formats:
+  default:
+    line1: "&8&m--------------------------------------------------"
+    title: "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡"  # ← Usa {color}
+    description: "&f{player} &7is now streaming live"
+    link: "&7Join now! {color}&n{link}"  # ← Usa {color}
+    hover: "&eClick to open the stream!"
+    line2: "&8&m--------------------------------------------------"
