@@ -9,9 +9,6 @@ import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.ChatUtils;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class DirectoCommand implements CommandExecutor {
@@ -52,24 +49,13 @@ public class DirectoCommand implements CommandExecutor {
             return true;
         }
 
-        // Detectar plataforma y color
-        PlatformInfo platform = detectPlatform(link);
+        // Detectar plataforma (SOLO EL NOMBRE, NO EL COLOR)
+        String platformName = detectPlatform(link);
 
-
-        sendClickableBroadcast(player.getName(), platform, link);
+        // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
+        sendClickableBroadcast(player.getName(), platformName, link);
 
         return true;
-    }
-
-    // Datos de plataforma
-    private static class PlatformInfo {
-        String name;
-        String color;
-
-        PlatformInfo(String name, String color) {
-            this.name = name;
-            this.color = color;
-        }
     }
 
     // Validar link básico
@@ -86,40 +72,44 @@ public class DirectoCommand implements CommandExecutor {
                 lower.contains("tiktok.com/");
     }
 
-    // Detectar plataforma
-    private PlatformInfo detectPlatform(String url) {
+    // Detectar plataforma (Devuelve solo String)
+    private String detectPlatform(String url) {
         String lower = url.toLowerCase();
 
         if (lower.contains("twitch.tv/")) {
-            return new PlatformInfo("Twitch", "&d");
+            return "Twitch";
         }
 
         if (lower.contains("youtube.com/") || lower.contains("youtu.be/")) {
-            return new PlatformInfo("YouTube", "&c");
+            return "YouTube";
         }
 
         if (lower.contains("kick.com/")) {
-            return new PlatformInfo("Kick", "&a");
+            return "Kick";
         }
 
         if (lower.contains("tiktok.com/")) {
-            return new PlatformInfo("TikTok", "&b");
+            return "TikTok";
         }
 
-        return new PlatformInfo("Directo", "&6");
+        return "Directo";
     }
 
-    // Actualizamos para que utilice AnnouncementFormatter y sea editable
-    private void sendClickableBroadcast(String playerName, PlatformInfo platform, String link) {
-        // Usar el nuevo formatter
+    // Metodo actualizado para utilizar el nuevo formato
+    private void sendClickableBroadcast(String playerName, String platformName, String link) {
         TextComponent[] components = AnnouncementFormatter.createAnnouncement(
                 playerName,
-                platform.name,
-                platform.color,
+                platformName,
                 link
         );
 
-        // Envío global
+        // Verificar que se crearon componentes
+        if (components == null || components.length == 0) {
+            Bukkit.getLogger().warning("No se pudieron crear componentes del anuncio");
+            return;
+        }
+
+        // Envío global - UNO POR UNO (para 1.8)
         for (Player p : Bukkit.getOnlinePlayers()) {
             for (TextComponent component : components) {
                 p.spigot().sendMessage(component);
@@ -140,7 +130,7 @@ public class DirectoCommand implements CommandExecutor {
         ChatUtils.send(player, "&6Examples:");
         ChatUtils.send(player, "&7• &f/stream https://twitch.tv/username");
         ChatUtils.send(player, "&7• &f/live https://youtube.com/live/username");
-        ChatUtils.send(player, "&7• &f/broadcast https://kick.com/username");
+        ChatUtils.send(player, "&7• &f/livestream https://kick.com/username");
         ChatUtils.send(player, "&7• &f/directo https://tiktok.com/@username/live");
         ChatUtils.send(player, "");
         ChatUtils.send(player, "&7The plugin will automatically detect the platform.");

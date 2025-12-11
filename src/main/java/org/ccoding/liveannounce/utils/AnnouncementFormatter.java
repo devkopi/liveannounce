@@ -8,195 +8,157 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.ccoding.liveannounce.LiveAnnounce;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Crea anuncios de stream usando componentes de chat
+ * Ahora mucho más optimizado y organizado
+ */
 public class AnnouncementFormatter {
 
-    private static final Map<String, String> FORMATS = new HashMap<>();
+    // Enumeración para identificar cada parte del formato
+    private enum FormatKey {
+        LINE1, TITLE, DESCRIPTION, LINK, HOVER, LINE2;
+
+        public String getConfigKey() {
+            return name().toLowerCase();
+        }
+    }
+
+    private static final String[] FORMATS = new String[FormatKey.values().length];
     private static boolean initialized = false;
 
+    // Constructor privado - no se puede instanciar
     private AnnouncementFormatter() {}
 
-    public static void initialize(FileConfiguration config){
+    /**
+     * Carga los formatos desde la configuración
+     */
+    public static void initialize(FileConfiguration config) {
         if (initialized) return;
 
         ConfigurationSection formatsSection = config.getConfigurationSection("announcement-formats.default");
-        if (formatsSection == null) {
-            loadDefaultFormats();
-            return;
+
+        for (FormatKey key : FormatKey.values()) {
+            if (formatsSection != null) {
+                // Cargar desde config
+                FORMATS[key.ordinal()] = formatsSection.getString(
+                        key.getConfigKey(),
+                        getDefaultFormat(key)
+                );
+            } else {
+                // Usar valores por defecto
+                FORMATS[key.ordinal()] = getDefaultFormat(key);
+            }
         }
 
-        // Cargar cada parte del formato
-        FORMATS.put("line1", formatsSection.getString("line1", getDefault("line1")));
-        FORMATS.put("title", formatsSection.getString("title", getDefault("title")));
-        FORMATS.put("description", formatsSection.getString("description", getDefault("description")));
-        FORMATS.put("link", formatsSection.getString("link", getDefault("link")));
-        FORMATS.put("hover", formatsSection.getString("hover", getDefault("hover")));
-        FORMATS.put("line2", formatsSection.getString("line2", getDefault("line2")));
-
         initialized = true;
-        LiveAnnounce.getInstance().getLogger().info("Announcement formats loaded: " + FORMATS.size() + " components");
     }
 
-    private static void loadDefaultFormats() {
-        FORMATS.put("line1", "&8&m--------------------------------------------------");
-        FORMATS.put("title", "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡");
-        FORMATS.put("description", "&f{player} &7is now streaming live");
-        FORMATS.put("link", "&7Join now! {color}&n{link}");
-        FORMATS.put("hover", "&eClick to open the stream!");
-        FORMATS.put("line2", "&8&m--------------------------------------------------");
-
-        initialized = true;
-        LiveAnnounce.getInstance().getLogger().info("Loaded default announcement formats");
+    /**
+     * Valores por defecto si no hay configuración
+     */
+    private static String getDefaultFormat(FormatKey key) {
+        switch (key) {
+            case LINE1: return "&8&m--------------------------------------------------";
+            case TITLE: return "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡";
+            case DESCRIPTION: return "&f{player} &7is now streaming live";
+            case LINK: return "&7Join now! {color}&n{link}";
+            case HOVER: return "&eClick to open the stream!";
+            case LINE2: return "&8&m--------------------------------------------------";
+            default: return "&7[" + key + "]";
+        }
     }
 
-    private static  String getDefault(String key) {
-        return FORMATS.getOrDefault(key, "&7[" + key + "]");
-    }
-
-    public static TextComponent[] createAnnouncement(String playerName, String platformName,
-                                                     String platformColor, String link) {
-
+    /**
+     * Crea un anuncio completo
+     */
+    public static TextComponent[] createAnnouncement(String playerName,
+                                                     String platformName,
+                                                     String link) {
+        // Verificar que esté inicializado
         if (!initialized) {
-            LiveAnnounce.getInstance().getLogger().warning("AnnouncementFormatter not initialized!");
+            LiveAnnounce.getInstance().getLogger().warning(
+                    "AnnouncementFormatter not initialized!"
+            );
             return new TextComponent[0];
         }
 
-        // Obtener color desde config (IGNORAR el platformColor que viene del comando)
-        String colorFromConfig = getPlatformColor(platformName.toLowerCase());
+        // Crear objeto con todos los datos (REEMPLAZA A LOS HASHMAPS)
+        AnnouncementData data = new AnnouncementData(playerName, platformName, link);
 
-        // Preparar variables
-        Map<String, String> variables = new HashMap<>();
-        variables.put("player", playerName);
-        variables.put("platform", platformName);
-        variables.put("platform_upper", platformName.toUpperCase());
-        variables.put("color", colorFromConfig);  // ← Usar "color" no "platform_color"
-        variables.put("link", link);
-
-        // Extraer channel del link (opcional)
-        String channel = extractChannel(link);
-        variables.put("channel", channel != null ? channel : playerName);
-
-        // DEBUG: Mostrar valores
-        System.out.println("[DEBUG] Platform: " + platformName);
-        System.out.println("[DEBUG] Color from config: '" + colorFromConfig + "'");
-        System.out.println("[DEBUG] Template title: " + FORMATS.get("title"));
-
-        // Crear componentes
+        // Crear cada parte del anuncio
         return new TextComponent[] {
-                createLine("line1", variables),
-                createTitle("title", variables),
-                createDescription("description", variables),
-                createClickableLink("link", "hover", variables, link),
-                createLine("line2", variables)
+                createFormattedLine(FORMATS[FormatKey.LINE1.ordinal()], data),
+                createFormattedTitle(FORMATS[FormatKey.TITLE.ordinal()], data),
+                createFormattedDescription(FORMATS[FormatKey.DESCRIPTION.ordinal()], data),
+                createClickableLink(
+                        FORMATS[FormatKey.LINK.ordinal()],
+                        FORMATS[FormatKey.HOVER.ordinal()],
+                        data
+                ),
+                createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data)
         };
     }
 
-    private static TextComponent createLine(String formatKey, Map<String, String> variables) {
-        String text = applyVariablesWithColor(FORMATS.get(formatKey), variables);
+    // ========== MÉTODOS PRIVADOS ==========
+
+    private static TextComponent createFormattedLine(String template, AnnouncementData data) {
+        String text = data.applyToTemplate(template);
         return new TextComponent(ChatUtils.color(text));
     }
 
-    private static TextComponent createTitle(String formatKey, Map<String, String> variables) {
-        String text = applyVariablesWithColor(FORMATS.get(formatKey), variables);
+    private static TextComponent createFormattedTitle(String template, AnnouncementData data) {
+        String text = data.applyToTemplate(template);
         return new TextComponent(ChatUtils.color(text));
     }
 
-    private static TextComponent createDescription(String formatKey, Map<String, String> variables) {
-        String text = applyVariablesWithColor(FORMATS.get(formatKey), variables);
+    private static TextComponent createFormattedDescription(String template, AnnouncementData data) {
+        String text = data.applyToTemplate(template);
         return new TextComponent(ChatUtils.color(text));
     }
 
-    private static TextComponent createClickableLink(String formatKey, String hoverKey,
-                                                     Map<String, String> variables, String link) {
-        String text = applyVariablesWithColor(FORMATS.get(formatKey), variables);
-        String hoverText = applyVariablesWithColor(FORMATS.get(hoverKey), variables);
+    private static TextComponent createClickableLink(String linkTemplate,
+                                                     String hoverTemplate,
+                                                     AnnouncementData data) {
+        String linkText = data.applyToTemplate(linkTemplate);
+        String hoverText = data.applyToTemplate(hoverTemplate);
 
-        TextComponent component = new TextComponent(ChatUtils.color(text));
-        component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link));
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(ChatUtils.color(hoverText)).create()));
+        TextComponent component = new TextComponent(ChatUtils.color(linkText));
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, data.getLink()));
+        component.setHoverEvent(new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder(ChatUtils.color(hoverText)).create()
+        ));
 
         return component;
     }
 
-    private static String applyVariablesWithColor(String template, Map<String, String> variables) {
-        if (template == null) return "";
-
-        String result = template;
-
-        // Reemplazar TODAS las variables
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            String placeholder = "{" + entry.getKey() + "}";
-            result = result.replace(placeholder, entry.getValue());
-        }
-
-        return result;
-    }
-
-    private static String extractChannel(String link) {
-        try {
-            // Simple extracción: twitch.tv/{canal}
-            if (link.contains("twitch.tv/")) {
-                return link.substring(link.indexOf("twitch.tv/") + 10).split("/")[0];
-            }
-            // youtube.com/{canal} o youtu.be/{id}
-            else if (link.contains("youtube.com/")) {
-                return link.substring(link.indexOf("youtube.com/") + 12).split("/")[0];
-            }
-            else if (link.contains("youtu.be/")) {
-                return link.substring(link.indexOf("youtu.be/") + 9);
-            }
-            // kick.com/{canal}
-            else if (link.contains("kick.com/")) {
-                return link.substring(link.indexOf("kick.com/") + 9);
-            }
-            // tiktok.com/@{canal}
-            else if (link.contains("tiktok.com/@")) {
-                return link.substring(link.indexOf("tiktok.com/@") + 12).split("/")[0];
-            }
-        } catch (Exception e) {
-            // Si falla la extracción, usar player name
-        }
-        return null;
-    }
-
+    /**
+     * Recarga los formatos
+     */
     public static void reload(FileConfiguration config) {
-        FORMATS.clear();
+        // Limpiar array
+        for (int i = 0; i < FORMATS.length; i++) {
+            FORMATS[i] = null;
+        }
+
         initialized = false;
         initialize(config);
+
+        // Limpiar cache de colores
+        ColorCache.clear();
     }
 
+    /**
+     * Verifica si está inicializado
+     */
     public static boolean isInitialized() {
         return initialized;
     }
 
+    /**
+     * Obtiene cantidad de formatos cargados
+     */
     public static int getFormatCount() {
-        return FORMATS.size();
-    }
-
-    private static String getPlatformColor(String platformKey) {
-        // Intentar obtener desde config
-        String color = LiveAnnounce.getInstance().getConfig()
-                .getString("platform-colors." + platformKey);
-
-        // Si no existe usar default
-        if (color == null || color.trim().isEmpty()) {
-            color = LiveAnnounce.getInstance().getConfig()
-                    .getString("platform-colors.default", "&6");
-        }
-
-        // Asegurar que empiece con & y tenga formato correcto
-        if (!color.startsWith("&") && color.length() >= 1) {
-            color = "&" + color;
-        }
-
-        // Asegurar formato & + letra (ej: &d, &c)
-        if (color.length() == 2 && color.startsWith("&")) {
-            return color;
-        }
-
-        return color;
+        return FORMATS.length;
     }
 }
