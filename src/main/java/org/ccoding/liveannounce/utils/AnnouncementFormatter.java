@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.ccoding.liveannounce.LiveAnnounce;
@@ -35,23 +36,19 @@ public class AnnouncementFormatter {
     public static void initialize(FileConfiguration config) {
         if (initialized) return;
 
-        ConfigurationSection formatsSection = config.getConfigurationSection("announcement-formats.default");
+        ConfigurationSection formatsSection =
+                config.getConfigurationSection("announcement-formats.default");
 
         for (FormatKey key : FormatKey.values()) {
-            if (formatsSection != null) {
-                // Cargar desde config
-                FORMATS[key.ordinal()] = formatsSection.getString(
-                        key.getConfigKey(),
-                        getDefaultFormat(key)
-                );
-            } else {
-                // Usar valores por defecto
-                FORMATS[key.ordinal()] = getDefaultFormat(key);
-            }
+            FORMATS[key.ordinal()] = formatsSection != null
+                    ? formatsSection.getString(key.getConfigKey(), getDefaultFormat(key))
+                    : getDefaultFormat(key);
         }
 
         initialized = true;
     }
+
+
 
     /**
      * Valores por defecto si no hay configuración
@@ -142,7 +139,7 @@ public class AnnouncementFormatter {
         }
 
         initialized = false;
-        initialize(config);
+        initializeAsync(config);
 
         // Limpiar cache de colores
         ColorCache.clear();
