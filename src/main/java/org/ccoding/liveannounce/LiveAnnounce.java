@@ -22,7 +22,7 @@ public class LiveAnnounce extends JavaPlugin {
         // Cargamos los managers
         PrefixManager.load(getConfig());
         MessageManager.setup(getConfig());
-        AnnouncementFormatter.initialize(getConfig());
+        AnnouncementFormatter.initializeAsync(getConfig());
 
         // Verificar si el plugin está habilitado
         if (!getConfig().getBoolean("enabled", true)) {
