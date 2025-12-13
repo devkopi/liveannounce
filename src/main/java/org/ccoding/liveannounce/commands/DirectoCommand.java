@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.managers.AnnouncementService;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.ChatUtils;
@@ -53,7 +54,10 @@ public class DirectoCommand implements CommandExecutor {
         String platformName = detectPlatform(link);
 
         // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
-        sendClickableBroadcast(player.getName(), platformName, link);
+        AnnouncementService.broadcastAnnouncement(
+                player.getName(),
+                platformName,
+                link);
 
         return true;
     }
@@ -95,27 +99,7 @@ public class DirectoCommand implements CommandExecutor {
         return "Directo";
     }
 
-    // Metodo actualizado para utilizar el nuevo formato
-    private void sendClickableBroadcast(String playerName, String platformName, String link) {
-        TextComponent[] components = AnnouncementFormatter.createAnnouncement(
-                playerName,
-                platformName,
-                link
-        );
 
-        // Verificar que se crearon componentes
-        if (components == null || components.length == 0) {
-            Bukkit.getLogger().warning("No se pudieron crear componentes del anuncio");
-            return;
-        }
-
-        // Envío global - UNO POR UNO (para 1.8)
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            for (TextComponent component : components) {
-                p.spigot().sendMessage(component);
-            }
-        }
-    }
 
     private void showHelp(Player player) {
         ChatUtils.send(player, ChatUtils.getLine());
