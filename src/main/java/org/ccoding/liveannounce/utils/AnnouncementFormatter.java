@@ -33,28 +33,21 @@ public class AnnouncementFormatter {
     /**
      * Carga los formatos desde la configuración
      */
-    public static void initializeAsync(FileConfiguration config) {
-        Bukkit.getScheduler().runTaskAsynchronously(LiveAnnounce.getInstance(), () -> {
-            if (initialized) return;
+    public static void initialize(FileConfiguration config) {
+        if (initialized) return;
 
-            ConfigurationSection formatsSection = config.getConfigurationSection("announcement-formats.default");
+        ConfigurationSection formatsSection =
+                config.getConfigurationSection("announcement-formats.default");
 
-            for (FormatKey key : FormatKey.values()) {
-                if (formatsSection != null) {
-                    // Cargar desde config
-                    FORMATS[key.ordinal()] = formatsSection.getString(
-                            key.getConfigKey(),
-                            getDefaultFormat(key)
-                    );
-                } else {
-                    // Usar valores por defecto
-                    FORMATS[key.ordinal()] = getDefaultFormat(key);
-                }
-            }
+        for (FormatKey key : FormatKey.values()) {
+            FORMATS[key.ordinal()] = formatsSection != null
+                    ? formatsSection.getString(key.getConfigKey(), getDefaultFormat(key))
+                    : getDefaultFormat(key);
+        }
 
-            initialized = true;
-        });
+        initialized = true;
     }
+
 
 
     /**
