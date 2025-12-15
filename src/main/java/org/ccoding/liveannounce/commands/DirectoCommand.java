@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.managers.AnnouncementPipeline;
 import org.ccoding.liveannounce.managers.AnnouncementService;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
@@ -54,7 +55,7 @@ public class DirectoCommand implements CommandExecutor {
         String platformName = detectPlatform(link);
 
         // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
-        AnnouncementService.broadcastAnnouncement(
+        AnnouncementPipeline.execute(
                 player.getName(),
                 platformName,
                 link);

@@ -139,7 +139,7 @@ public class AnnouncementFormatter {
         }
 
         initialized = false;
-        initializeAsync(config);
+        initialize(config);
 
         // Limpiar cache de colores
         ColorCache.clear();
