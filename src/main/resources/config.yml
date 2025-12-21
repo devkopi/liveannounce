@@ -40,3 +40,9 @@ announcement-formats:
     link: "&7Join now! {color}&n{link}"  # ← Usa {color}
     hover: "&eClick to open the stream!"
     line2: "&8&m--------------------------------------------------"
+
+# ========== COOLDOWN ==========
+cooldown:
+  enabled: true
+  seconds: 30
+  message: "&cYou must wait {time}s before using this command again."

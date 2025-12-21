@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.managers.AnnouncementPipeline;
 import org.ccoding.liveannounce.managers.AnnouncementService;
+import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.ChatUtils;
@@ -30,6 +31,19 @@ public class DirectoCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+
+        CooldownManager cooldown = LiveAnnounce.getInstance().getAnnouncementCooldown();
+
+        if (cooldown != null && !cooldown.canUse(player.getUniqueId())) {
+            long remaining = cooldown.getRemaining(player.getUniqueId());
+
+            String message = LiveAnnounce.getInstance().getConfig().getString("cooldown.message", "&cYou must wait {time}s.");
+
+            player.sendMessage(ChatUtils.color(
+                    message.replace("{time}", String.valueOf(remaining))
+            ));
+            return true;
+        }
 
         if (!player.hasPermission("liveannounce.directo") && !player.isOp()) {
             ChatUtils.sendMessage(player, MessageManager.get("no-permission"));
@@ -60,6 +74,9 @@ public class DirectoCommand implements CommandExecutor {
                 platformName,
                 link);
 
+        if (cooldown != null) {
+            cooldown.apply(player.getUniqueId());
+        }
         return true;
     }
 

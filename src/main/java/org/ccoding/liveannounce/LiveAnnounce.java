@@ -3,6 +3,7 @@ package org.ccoding.liveannounce;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
+import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
@@ -10,6 +11,7 @@ import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 public class LiveAnnounce extends JavaPlugin {
 
     private static LiveAnnounce instance;
+    private CooldownManager announcementCooldown;
 
     @Override
     public void onEnable() {
@@ -31,6 +33,13 @@ public class LiveAnnounce extends JavaPlugin {
             return;
         }
 
+        boolean cooldownEnabled = getConfig().getBoolean("cooldown.enabled", true);
+        int cooldownSeconds = getConfig().getInt("cooldown.seconds", 30);
+
+        if (cooldownEnabled) {
+            announcementCooldown = new CooldownManager(cooldownSeconds);
+        }
+
         this.getCommand("directo").setExecutor(new DirectoCommand());
         this.getCommand("liveannounce").setExecutor(new LiveAnnounceCommand());
 
@@ -50,10 +59,22 @@ public class LiveAnnounce extends JavaPlugin {
         return instance;
     }
 
+    public CooldownManager getAnnouncementCooldown(){
+        return announcementCooldown;
+    }
+
     public void reloadPlugin() {
         reloadConfig();
         PrefixManager.load(getConfig());
         MessageManager.reload(getConfig());
         AnnouncementFormatter.reload(getConfig());
+        boolean cooldownEnabled = getConfig().getBoolean("cooldown.enabled", true);
+        int cooldownSeconds = getConfig().getInt("cooldown.seconds", 30);
+
+        if (cooldownEnabled) {
+            announcementCooldown = new CooldownManager(cooldownSeconds);
+        } else {
+            announcementCooldown = null;
+        }
     }
 }
