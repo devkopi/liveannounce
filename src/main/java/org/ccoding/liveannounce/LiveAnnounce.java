@@ -6,20 +6,30 @@ import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
 import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
+import org.ccoding.liveannounce.messaging.ChannelManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 public class LiveAnnounce extends JavaPlugin {
 
     private static LiveAnnounce instance;
     private CooldownManager announcementCooldown;
+    private ChannelManager channelManager;
 
     @Override
     public void onEnable() {
         instance = this;
 
+        // Inicializador gestor de canales
+        channelManager = new ChannelManager(this);
+        channelManager.registerChannels();
+
+
         // Guardar config por defecto
         saveDefaultConfig();
         reloadConfig();
+
+        // Inicializar BridgeManager para manejar proxy (BungeeCord/Velocity)
+        org.ccoding.liveannounce.proxy.BridgeManager.initialize(this);
 
         // Cargamos los managers
         PrefixManager.load(getConfig());
@@ -43,7 +53,6 @@ public class LiveAnnounce extends JavaPlugin {
         this.getCommand("directo").setExecutor(new DirectoCommand());
         this.getCommand("liveannounce").setExecutor(new LiveAnnounceCommand());
 
-
         getLogger().info("==================================");
         getLogger().info("LiveAnnounce v" + getDescription().getVersion());
         getLogger().info("Plugin activado correctamente!");
@@ -53,6 +62,11 @@ public class LiveAnnounce extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("LiveAnnounce desactivado");
+
+        // Limpiar canales si están registrados
+        if (channelManager != null) {
+            channelManager.unregisterChannels();
+        }
     }
 
     public static LiveAnnounce getInstance() {
@@ -76,5 +90,9 @@ public class LiveAnnounce extends JavaPlugin {
         } else {
             announcementCooldown = null;
         }
+    }
+
+    public ChannelManager getChannelManager() {
+        return channelManager;
     }
 }

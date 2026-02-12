@@ -2,33 +2,37 @@ package org.ccoding.liveannounce.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.proxy.Bridge;
+import org.ccoding.liveannounce.proxy.BridgeManager;
 import org.ccoding.liveannounce.utils.AnnouncementData;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
- * Esta clase divide el proceso del anuncio en fases
+ * Esta clase divide el proceso del anuncio en fases para optimizar rendimiento.
  *
- * 1, Async: Logica pura sin bukkit
- * 2, Main Theread: interaccion con jugador
+ * 1. Async: Lógica pura sin Bukkit API (thread seguro)
+ * 2. Main Thread: Interacción con jugadores
  *
- * El principal objetivo de esta clase es reducir los picos de CPU
- * y mejorar el rendimiento
+ * El objetivo principal es reducir los picos de CPU y mejorar la experiencia
+ * cuando hay muchos jugadores online.
  */
 public class AnnouncementPipeline {
-    // Ejecuta el anuncio usando un pipeline async -> main
-    public static void execute(String playerName,
-                               String platformName,
-                               String link) {
-        // Logica de async
+
+    /**
+     * Ejecuta el anuncio usando un pipeline async -> main thread.
+     * Esto evita bloquear el servidor mientras se procesa el formato del mensaje.
+     */
+    public static void execute(String playerName, String platformName, String link) {
+        // Ejecutamos en async para procesamiento pesado (formateo, validaciones)
         Bukkit.getScheduler().runTaskAsynchronously(
                 LiveAnnounce.getInstance(),
                 () -> {
-                    // Creamos los datos del anuncio
-                    // No empleo bukkit, solo strings y utils seguros
+                    // Creamos los datos del anuncio (solo objetos Java, sin Bukkit API)
                     AnnouncementData data = new AnnouncementData(playerName, platformName, link);
+
+                    // Volvemos al main thread para interactuar con jugadores
                     Bukkit.getScheduler().runTask(
                             LiveAnnounce.getInstance(),
                             () -> broadcast(data)
@@ -37,24 +41,68 @@ public class AnnouncementPipeline {
         );
     }
 
-    // Envio del anuncio al hilo principal (main theread)
-    // Empleamos bukkit
+    /**
+     * Envía el anuncio a los jugadores. DEBE ejecutarse en el main thread
+     * porque usa Bukkit API (spigot().sendMessage()).
+     *
+     * También maneja el envío a otros servidores si hay proxy configurado.
+     */
     private static void broadcast(AnnouncementData data) {
+        // Creamos los componentes del anuncio usando nuestro formateador
+        TextComponent[] components = AnnouncementFormatter.createAnnouncement(
+                data.getPlayerName(),
+                data.getPlatformName(),
+                data.getLink()
+        );
 
-        // Creamos los componentes del anuncio
-        TextComponent[] components =
-                AnnouncementFormatter.createAnnouncement(
-                        data.getPlayerName(),
-                        data.getPlatformName(),
-                        data.getLink()
-                );
-        if (components.length == 0) return;
+        // Si algo salió mal con el formateo, nos detenemos aquí
+        if (components.length == 0) {
+            LiveAnnounce.getInstance().getLogger().warning("No se pudieron crear los componentes del anuncio");
+            return;
+        }
 
-        // Enviar a todos los jugadores
+        // Fase 1: Envío LOCAL (siempre se hace, incluso si hay proxy)
+        // Esto asegura que al menos el servidor actual reciba el anuncio
         for (Player player : Bukkit.getOnlinePlayers()) {
             for (TextComponent component : components) {
                 player.spigot().sendMessage(component);
             }
+        }
+
+        // Fase 2: Envío a RED (si hay proxy configurado y disponible)
+        // Esto envía el anuncio a otros servidores conectados al proxy
+        sendToNetwork(data.getPlayerName(), data.getPlatformName(), data.getLink());
+    }
+
+    /**
+     * Envía el anuncio a otros servidores a través del proxy configurado.
+     * Si no hay proxy o falla, simplemente registramos el error y continuamos.
+     */
+    private static void sendToNetwork(String playerName, String platform, String link) {
+        try {
+            Bridge bridge = BridgeManager.getActiveBridge();
+
+            if (bridge == null) {
+                // Esto solo pasa si el BridgeManager no se inicializó correctamente
+                LiveAnnounce.getInstance().getLogger().info("BridgeManager no inicializado. Solo envío local.");
+                return;
+            }
+
+            // Verificamos si el proxy está disponible y configurado
+            if (!bridge.isAvailable()) {
+                LiveAnnounce.getInstance().getLogger().info("Proxy configurado pero no disponible: " + bridge.getName());
+                LiveAnnounce.getInstance().getLogger().info("Continuando solo con envío local.");
+                return;
+            }
+
+            // Se hace el envio atraves del proxy
+            LiveAnnounce.getInstance().getLogger().info("Enviando anuncio a red a través de: " + bridge.getName());
+            bridge.broadcastAnnouncement(playerName, platform, link);
+
+        } catch (Exception e) {
+            // Capturamos cualquier error para evitar que falle el anuncio local
+            LiveAnnounce.getInstance().getLogger().warning("Error al enviar a red: " + e.getMessage());
+            LiveAnnounce.getInstance().getLogger().info("El anuncio se envió localmente correctamente.");
         }
     }
 }

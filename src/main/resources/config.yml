@@ -1,4 +1,22 @@
-# LiveAnnounce Configuration v1.0.3
+# LiveAnnounce Configuration v1.1.2 - ¡PROXY UPDATE!
+
+# ============================================
+# CONFIGURACIÓN DE PROXY - LiveAnnounce
+# ============================================
+proxy:
+  # Habilitar o deshabilitar completamente el sistema de proxy
+  # Si está en false, SOLO enviará al servidor local
+  enabled: true
+
+  # Tipo de proxy (opciones: "auto", "bungeecord", "velocity", "none")
+  # - "auto": Detecta automáticamente
+  # - "bungeecord": Forzar BungeeCord
+  # - "velocity": Forzar Velocity (solo Paper)
+  # - "none": Sin proxy, solo local
+  type: "auto"
+
+  # Detección automática (solo aplica si type: "auto")
+  auto-detect: true
 
 # ========== BASIC SETTINGS ==========
 enabled: true
