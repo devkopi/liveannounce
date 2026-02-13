@@ -8,6 +8,7 @@ import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
 import org.ccoding.liveannounce.messaging.ChannelManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
+import org.ccoding.liveannounce.proxy.BridgeManager;
 
 public class LiveAnnounce extends JavaPlugin {
 
@@ -78,10 +79,18 @@ public class LiveAnnounce extends JavaPlugin {
     }
 
     public void reloadPlugin() {
+        // Recargar configuración
         reloadConfig();
+
+        // Recargar el BridgeManager para detectar cambios en la configuración del proxy
+        BridgeManager.reload(this);
+
+        // Managers
         PrefixManager.load(getConfig());
         MessageManager.reload(getConfig());
         AnnouncementFormatter.reload(getConfig());
+
+        // Recarga cooldown
         boolean cooldownEnabled = getConfig().getBoolean("cooldown.enabled", true);
         int cooldownSeconds = getConfig().getInt("cooldown.seconds", 30);
 

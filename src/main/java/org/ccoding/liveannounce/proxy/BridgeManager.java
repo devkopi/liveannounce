@@ -7,6 +7,7 @@ public class BridgeManager {
     private static Bridge activeBridge;
 
     public static void initialize(LiveAnnounce plugin) {
+
         // Leer configuración del proxy
         boolean proxyEnabled = plugin.getConfig().getBoolean("proxy.enabled", true);
         String configType = plugin.getConfig().getString("proxy.type", "auto");
@@ -130,6 +131,13 @@ public class BridgeManager {
                 plugin.getLogger().warning("  Usando detección automática...");
                 return detectProxy(plugin);
         }
+    }
+
+    // Recar el sistema de proxy con la configuracion actualizada
+    public static void reload(LiveAnnounce plugin) {
+        plugin.getLogger().info("Recargando configuración de proxy...");
+        activeBridge = null; // Limpiar bridge actual para evitar conflictos
+        initialize(plugin);
     }
 
     public static Bridge getActiveBridge() {

@@ -18,6 +18,10 @@ proxy:
   # Detección automática (solo aplica si type: "auto")
   auto-detect: true
 
+  # Velocity Config
+  velocity-enabled: false  # Cambiar a true SOLO si usas Velocity Y Paper
+  has-network: false      # Cambiar a true SOLO si hay MÁS DE 1 SERVIDOR en la red
+
 # ========== BASIC SETTINGS ==========
 enabled: true
 prefix: "&8[&bLiveAnnounce&8] &7"

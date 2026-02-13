@@ -24,8 +24,7 @@ public class StandaloneBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        // Solo envía localmente
-        broadcastLocally(playerName, platform, link);
+        // Este bridge solo existe para indicar que NO hay proxy.
     }
 
     private void broadcastLocally(String playerName, String platform, String link) {

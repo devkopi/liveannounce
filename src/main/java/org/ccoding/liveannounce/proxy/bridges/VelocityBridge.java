@@ -16,6 +16,10 @@ public class VelocityBridge implements Bridge {
     private final LiveAnnounce plugin;
     private static final String VELOCITY_CHANNEL = "velocity:announce";
 
+    // Cache para evitar logs repetitivos
+    private boolean paperChecked = false;
+    private boolean isPaper = false;
+
     public VelocityBridge(LiveAnnounce plugin) {
         this.plugin = plugin;
     }
@@ -27,7 +31,30 @@ public class VelocityBridge implements Bridge {
 
     @Override
     public boolean isAvailable() {
-        return isPaperServer() && isVelocityEnabled();
+        // Velocity SOLO funciona en Paper, y requiere configuración manual
+        // Es más confiable que el admin especifique si hay red o no
+
+        boolean paper = isPaperServer();
+        boolean configEnabled = plugin.getConfig().getBoolean("proxy.velocity-enabled", false);
+        boolean hasNetwork = plugin.getConfig().getBoolean("proxy.has-network", false);
+
+        // Solo mostrar logs la primera vez
+        if (!paperChecked) {
+            if (paper && configEnabled) {
+                plugin.getLogger().info("✓ Velocity configurado manualmente en config.yml");
+                if (hasNetwork) {
+                    plugin.getLogger().info("✓ Red Velocity detectada (configurada manualmente)");
+                } else {
+                    plugin.getLogger().info("ℹ Red Velocity deshabilitada en config.yml");
+                    plugin.getLogger().info("  Establece 'proxy.has-network: true' si hay otros servidores");
+                }
+            }
+            paperChecked = true;
+            isPaper = paper;
+        }
+
+        // Velocity requiere: Paper + Configuración manual + Red activa
+        return paper && configEnabled && hasNetwork;
     }
 
     /**
@@ -35,84 +62,20 @@ public class VelocityBridge implements Bridge {
      */
     private boolean isPaperServer() {
         try {
-            // Método 1: Verificar clase PaperConfig
             Class.forName("com.destroystokyo.paper.PaperConfig");
-            plugin.getLogger().info("✓ Servidor Paper detectado");
             return true;
         } catch (ClassNotFoundException e) {
-            // Método 2: Verificar si es PaperSpigot
+            // También verificar por nombre
             String serverName = Bukkit.getServer().getName();
-            if (serverName.contains("Paper") || serverName.contains("paper")) {
-                plugin.getLogger().info("✓ Servidor Paper detectado por nombre: " + serverName);
-                return true;
-            }
-
-            // Método 3: Verificar versión
-            String bukkitVersion = Bukkit.getBukkitVersion();
-            if (bukkitVersion.contains("Paper") || bukkitVersion.contains("paper")) {
-                plugin.getLogger().info("✓ Servidor Paper detectado por versión: " + bukkitVersion);
-                return true;
-            }
-
-            plugin.getLogger().info("✗ No es un servidor Paper. Velocity no está disponible.");
-            return false;
+            return serverName.contains("Paper") || serverName.contains("paper");
         }
-    }
-
-    /**
-     * Verifica si Velocity está habilitado
-     */
-    private boolean isVelocityEnabled() {
-        try {
-            // Método 1: Verificar mediante configuración del servidor
-            Class<?> paperConfigClass = Class.forName("com.destroystokyo.paper.PaperConfig");
-            java.lang.reflect.Field velocityField = paperConfigClass.getDeclaredField("velocitySupport");
-            velocityField.setAccessible(true);
-            Object velocityValue = velocityField.get(null);
-
-            if (velocityValue instanceof Boolean) {
-                boolean enabled = (Boolean) velocityValue;
-                if (enabled) {
-                    plugin.getLogger().info("✓ Velocity habilitado en Paper");
-                }
-                return enabled;
-            }
-        } catch (Exception e) {
-            // Método 2: Verificar si el canal de Velocity está registrado
-            try {
-                if (Bukkit.getServer().getMessenger().getOutgoingChannels(plugin)
-                        .stream().anyMatch(channel -> channel.equalsIgnoreCase("velocity:announce"))) {
-                    plugin.getLogger().info("✓ Canal Velocity detectado");
-                    return true;
-                }
-            } catch (Exception e2) {
-                // Ignorar
-            }
-
-            // Método 3: Verificar si hay players con Velocity
-            if (!Bukkit.getOnlinePlayers().isEmpty()) {
-                Player player = Bukkit.getOnlinePlayers().iterator().next();
-                try {
-                    // Intentar enviar un mensaje de prueba
-                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                    out.writeUTF("Test");
-                    player.sendPluginMessage(plugin, "velocity:announce", out.toByteArray());
-                    plugin.getLogger().info("✓ Velocity funcionando (test exitoso)");
-                    return true;
-                } catch (Exception e3) {
-                    // No funciona
-                }
-            }
-        }
-
-        plugin.getLogger().info("✗ Velocity no está habilitado o configurado");
-        return false;
     }
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
+        // Verificar disponibilidad ANTES de enviar
         if (!isAvailable()) {
-            plugin.getLogger().info("Velocity no disponible. Enviando solo localmente.");
+            // No logueamos nada aquí para no spamear
             broadcastLocally(playerName, platform, link);
             return;
         }
@@ -126,15 +89,15 @@ public class VelocityBridge implements Bridge {
         }
 
         try {
-            // 1. Enviar a otros servidores vía Velocity
+            // Enviar a otros servidores SOLO si hay red configurada
             sendToVelocity(playerName, platform, link);
+            plugin.getLogger().info("✓ Anuncio enviado a red Velocity");
 
-            // 2. Ya se envió localmente en AnnouncementPipeline
-            plugin.getLogger().info("✓ Anuncio enviado a toda la red Velocity");
+            // El envío local ya lo hace AnnouncementPipeline
+            // No necesitamos broadcastLocally aquí
 
         } catch (Exception e) {
             plugin.getLogger().severe("Error enviando anuncio a Velocity: " + e.getMessage());
-            // Fallback local
             broadcastLocally(playerName, platform, link);
         }
     }
@@ -143,13 +106,14 @@ public class VelocityBridge implements Bridge {
      * Envía datos estructurados a través de Velocity
      */
     private void sendToVelocity(String playerName, String platform, String link) throws Exception {
-        // Velocity usa un formato similar
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        // Canal para Velocity (puede ser diferente según versión)
-        String velocityChannel = getVelocityChannel();
+        // Formato estándar para Velocity/BungeeCord
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("liveannounce:announce");
 
-        // Serializar datos
+        // Serializar datos del anuncio
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
         DataOutputStream msgout = new DataOutputStream(msgbytes);
 
@@ -157,35 +121,17 @@ public class VelocityBridge implements Bridge {
         msgout.writeUTF(platform);
         msgout.writeUTF(link);
 
-        // Enviar a Velocity
+        out.writeShort(msgbytes.toByteArray().length);
+        out.write(msgbytes.toByteArray());
+
+        // Enviar usando el canal de Velocity
         Player player = plugin.getServer().getOnlinePlayers().iterator().next();
-        player.sendPluginMessage(plugin, velocityChannel, msgbytes.toByteArray());
+        player.sendPluginMessage(plugin, VELOCITY_CHANNEL, out.toByteArray());
     }
 
     /**
-     * Obtiene el canal correcto para Velocity
+     * Fallback: envía solo en este servidor
      */
-    private String getVelocityChannel() {
-        // Intentar diferentes canales según versión
-        String[] possibleChannels = {
-                "velocity:announce",
-                "velocity:main",
-                "velocity",
-                "velocity:plugin",
-                "velocity:liveannounce"
-        };
-
-        // Verificar qué canales están registrados
-        for (String channel : possibleChannels) {
-            if (Bukkit.getMessenger().isOutgoingChannelRegistered(plugin, channel)) {
-                return channel;
-            }
-        }
-
-        // Por defecto
-        return VELOCITY_CHANNEL;
-    }
-
     private void broadcastLocally(String playerName, String platform, String link) {
         TextComponent[] components =
                 org.ccoding.liveannounce.utils.AnnouncementFormatter.createAnnouncement(
