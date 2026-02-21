@@ -13,14 +13,9 @@ public class BridgeManager {
         String configType = plugin.getConfig().getString("proxy.type", "auto");
         boolean autoDetect = plugin.getConfig().getBoolean("proxy.auto-detect", true);
 
-        plugin.getLogger().info("=== CONFIGURACIÓN DE PROXY ===");
-        plugin.getLogger().info("Proxy habilitado: " + proxyEnabled);
-        plugin.getLogger().info("Tipo configurado: " + configType);
-        plugin.getLogger().info("Auto-detección: " + autoDetect);
-
         // Si el proxy está deshabilitado, usar standalone inmediatamente
         if (!proxyEnabled) {
-            plugin.getLogger().info("Proxy deshabilitado en config.yml. Usando modo standalone.");
+            plugin.getLogger().info("Proxy disabled. Using standalone mode.");
             activeBridge = new StandaloneBridge(plugin);
             logBridgeInfo(plugin);
             return;
@@ -29,10 +24,8 @@ public class BridgeManager {
         Bridge detectedBridge = null;
 
         if ("auto".equals(configType) || autoDetect) {
-            plugin.getLogger().info("Iniciando detección automática de proxy...");
             detectedBridge = detectProxy(plugin);
         } else {
-            plugin.getLogger().info("Usando proxy configurado manualmente: " + configType);
             detectedBridge = getBridgeByType(configType, plugin);
         }
 
@@ -40,8 +33,7 @@ public class BridgeManager {
 
         // Validación final
         if (activeBridge == null) {
-            plugin.getLogger().warning("No se pudo inicializar ningún bridge");
-            plugin.getLogger().warning("Usando modo standalone por defecto");
+            plugin.getLogger().warning("Could not initialize any bridge. Using standalone.");
             activeBridge = new StandaloneBridge(plugin);
         }
 
@@ -56,58 +48,39 @@ public class BridgeManager {
             String bridgeName = activeBridge.getName();
             boolean isAvailable = activeBridge.isAvailable();
 
-            plugin.getLogger().info("══════════════════════════════════════════");
             if (isAvailable) {
-                plugin.getLogger().info("✓ Bridge activo: " + bridgeName);
+                plugin.getLogger().info("[LiveAnnouncer] → Bridge active: " + bridgeName);
             } else {
-                plugin.getLogger().warning("✗ Bridge '" + bridgeName + "' NO está disponible");
-                plugin.getLogger().warning("  Usando modo standalone como fallback");
+                plugin.getLogger().warning("Bridge '" + bridgeName + "' is not available. Using standalone.");
                 activeBridge = new StandaloneBridge(plugin);
             }
-            plugin.getLogger().info("══════════════════════════════════════════");
         }
     }
 
     private static Bridge detectProxy(LiveAnnounce plugin) {
-        plugin.getLogger().info("Buscando proxy disponible...");
 
-        // 1. Intentar BungeeCord
-        Bridge bungeeBridge = new BungeeCordBridge(plugin);
-        if (bungeeBridge.isAvailable()) {
-            plugin.getLogger().info("✓ BungeeCord detectado y disponible");
-            return bungeeBridge;
-        }
+        // --- BUNGEE CORD (DESHABILITADO TEMPORALMENTE) ---
+        // Bridge bungeeBridge = new BungeeCordBridge(plugin);
+        // if (bungeeBridge.isAvailable()) {
+        //     return bungeeBridge;
+        // }
 
-        // 2. Intentar Velocity (si implementado)
+        // Intentar Velocity (único proxy soportado actualmente)
         try {
             Bridge velocityBridge = new VelocityBridge(plugin);
             if (velocityBridge.isAvailable()) {
-                plugin.getLogger().info("✓ Velocity detectado y disponible");
+                plugin.getLogger().info("Velocity detected and available.");
                 return velocityBridge;
             }
-        } catch (Exception e) {
-            // Velocity no está implementado o hay error
-            plugin.getLogger().info("Velocity no disponible: " + e.getMessage());
-        }
+        } catch (Exception ignored) {}
 
-        // 3. Verificar si el usuario forzó un proxy específico
+        // Verificar si el usuario forzó Velocity manualmente
         String manualType = plugin.getConfig().getString("proxy.type", "");
-        if (!manualType.isEmpty() && !"auto".equals(manualType)) {
-            switch (manualType.toLowerCase()) {
-                case "bungeecord":
-                case "bungee":
-                    plugin.getLogger().warning("⚠ BungeeCord configurado manualmente pero no está habilitado");
-                    plugin.getLogger().warning("  Asegúrate de que 'settings.bungeecord: true' esté en spigot.yml");
-                    break;
-                case "velocity":
-                    plugin.getLogger().warning("⚠ Velocity configurado manualmente pero no está disponible");
-                    plugin.getLogger().warning("  Asegúrate de usar Paper y tener Velocity configurado");
-                    break;
-            }
+        if ("velocity".equalsIgnoreCase(manualType)) {
+            plugin.getLogger().warning("Velocity configured but not available. Check Paper and Velocity setup.");
         }
 
-        // 4. Sin proxy detectado
-        plugin.getLogger().info("✓ No se detectó proxy. Usando modo standalone.");
+        // Sin proxy detectado
         return new StandaloneBridge(plugin);
     }
 
@@ -119,23 +92,21 @@ public class BridgeManager {
         switch (type.toLowerCase()) {
             case "velocity":
                 return new VelocityBridge(plugin);
-            case "bungeecord":
+            /*case "bungeecord":
             case "bungee":
-                return new BungeeCordBridge(plugin);
+                return new BungeeCordBridge(plugin);*/
             case "none":
             case "standalone":
             case "local":
                 return new StandaloneBridge(plugin);
             default:
-                plugin.getLogger().warning("⚠ Tipo de proxy desconocido: " + type);
-                plugin.getLogger().warning("  Usando detección automática...");
+                plugin.getLogger().warning("Unknown proxy type: " + type + ". Using auto detection.");
                 return detectProxy(plugin);
         }
     }
 
-    // Recar el sistema de proxy con la configuracion actualizada
+    // Recargar el sistema de proxy con la configuración actualizada
     public static void reload(LiveAnnounce plugin) {
-        plugin.getLogger().info("Recargando configuración de proxy...");
         activeBridge = null; // Limpiar bridge actual para evitar conflictos
         initialize(plugin);
     }

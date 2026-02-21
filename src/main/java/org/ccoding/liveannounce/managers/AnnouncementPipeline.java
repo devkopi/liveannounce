@@ -57,52 +57,33 @@ public class AnnouncementPipeline {
 
         // Si algo salió mal con el formateo, nos detenemos aquí
         if (components.length == 0) {
-            LiveAnnounce.getInstance().getLogger().warning("No se pudieron crear los componentes del anuncio");
             return;
         }
 
-        // Fase 1: Envío LOCAL (siempre se hace, incluso si hay proxy)
-        // Esto asegura que al menos el servidor actual reciba el anuncio
+        // Envío LOCAL
         for (Player player : Bukkit.getOnlinePlayers()) {
             for (TextComponent component : components) {
                 player.spigot().sendMessage(component);
             }
         }
 
-        // Fase 2: Envío a RED (si hay proxy configurado y disponible)
-        // Esto envía el anuncio a otros servidores conectados al proxy
+        // Envío a RED (si hay proxy disponible)
         sendToNetwork(data.getPlayerName(), data.getPlatformName(), data.getLink());
     }
 
     /**
      * Envía el anuncio a otros servidores a través del proxy configurado.
-     * Si no hay proxy o falla, simplemente registramos el error y continuamos.
      */
     private static void sendToNetwork(String playerName, String platform, String link) {
         try {
             Bridge bridge = BridgeManager.getActiveBridge();
 
-            if (bridge == null) {
-                // Esto solo pasa si el BridgeManager no se inicializó correctamente
-                LiveAnnounce.getInstance().getLogger().info("BridgeManager no inicializado. Solo envío local.");
+            if (bridge == null || !bridge.isAvailable()) {
                 return;
             }
 
-            // Verificamos si el proxy está disponible y configurado
-            if (!bridge.isAvailable()) {
-                LiveAnnounce.getInstance().getLogger().info("Proxy configurado pero no disponible: " + bridge.getName());
-                LiveAnnounce.getInstance().getLogger().info("Continuando solo con envío local.");
-                return;
-            }
-
-            // Se hace el envio atraves del proxy
-            LiveAnnounce.getInstance().getLogger().info("Enviando anuncio a red a través de: " + bridge.getName());
             bridge.broadcastAnnouncement(playerName, platform, link);
 
-        } catch (Exception e) {
-            // Capturamos cualquier error para evitar que falle el anuncio local
-            LiveAnnounce.getInstance().getLogger().warning("Error al enviar a red: " + e.getMessage());
-            LiveAnnounce.getInstance().getLogger().info("El anuncio se envió localmente correctamente.");
-        }
+        } catch (Exception ignored) {}
     }
 }

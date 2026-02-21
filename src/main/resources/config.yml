@@ -1,26 +1,26 @@
 # LiveAnnounce Configuration v1.1.2 - ¡PROXY UPDATE!
 
 # ============================================
-# CONFIGURACIÓN DE PROXY - LiveAnnounce
+# PROXY CONFIGURATION - LiveAnnounce
 # ============================================
 proxy:
-  # Habilitar o deshabilitar completamente el sistema de proxy
-  # Si está en false, SOLO enviará al servidor local
-  enabled: true
+  # Enable or disable the proxy system completely
+  # If set to false, will ONLY send to the local server
+  enabled: false
 
-  # Tipo de proxy (opciones: "auto", "bungeecord", "velocity", "none")
-  # - "auto": Detecta automáticamente
-  # - "bungeecord": Forzar BungeeCord
-  # - "velocity": Forzar Velocity (solo Paper)
-  # - "none": Sin proxy, solo local
+  # Proxy type (options: "auto", "bungeecord", "velocity", "none")
+  # - "auto": Automatically detects
+  # - "bungeecord": Force BungeeCord
+  # - "velocity": Force Velocity (Paper only)
+  # - "none": No proxy, local only
   type: "auto"
 
-  # Detección automática (solo aplica si type: "auto")
+  # Automatic detection (only applies if type: "auto")
   auto-detect: true
 
   # Velocity Config
-  velocity-enabled: false  # Cambiar a true SOLO si usas Velocity Y Paper
-  has-network: false      # Cambiar a true SOLO si hay MÁS DE 1 SERVIDOR en la red
+  velocity-enabled: false  # Change to true ONLY if using Velocity AND Paper
+  has-network: false      # Change to true ONLY if there is MORE THAN 1 server in the network
 
 # ========== BASIC SETTINGS ==========
 enabled: true

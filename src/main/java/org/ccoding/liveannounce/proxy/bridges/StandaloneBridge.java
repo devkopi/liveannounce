@@ -14,7 +14,7 @@ public class StandaloneBridge implements Bridge {
 
     @Override
     public String getName() {
-        return "Standalone (Sin proxy)";
+        return "Standalone";
     }
 
     @Override

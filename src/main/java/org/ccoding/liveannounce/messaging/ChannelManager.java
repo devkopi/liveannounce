@@ -12,34 +12,27 @@ public class ChannelManager {
 
     // Canales personalizados
     public static final String CHANNEL_ANNOUNCE = "liveannounce:announce";
-    private String activeBungeeChannel = null;
+    // private String activeBungeeChannel = null; // BungeeCord deshabilitado
 
     public ChannelManager(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void registerChannels() {
-        plugin.getLogger().info("Configurando canales de comunicación...");
-
-        // 1. Registrar canal personalizado (SIEMPRE va con dos puntos)
+        // Registrar canal personalizado
         registerIncomingChannel(CHANNEL_ANNOUNCE, new AnnouncementReceiver());
 
-        // 2. IMPORTANTE: NO registrar "bungeecord" sin dos puntos
-        // En Paper 1.20.4+ SOLO se permiten canales con formato "namespace:channel"
-        // Así que mejor NO registramos ningún canal BungeeCord explícitamente
-
-        // 3. Velocity solo si es Paper
+        // Velocity solo si es Paper
         if (isPaperServer()) {
             registerVelocityChannel();
         }
-
-        plugin.getLogger().info("Canales registrados: " + registeredChannels.size());
     }
 
     /**
      * NO registramos canal BungeeCord explícitamente.
      * En su lugar, obtenemos el canal cuando lo necesitamos.
      */
+    /* BungeeCord deshabilitado
     public String getBungeeCordChannel() {
         if (activeBungeeChannel == null) {
             // Detectar el canal apropiado según la versión
@@ -48,10 +41,10 @@ public class ChannelManager {
             } else {
                 activeBungeeChannel = "BungeeCord";
             }
-            plugin.getLogger().info("Canal BungeeCord detectado: " + activeBungeeChannel);
         }
         return activeBungeeChannel;
     }
+    */
 
     /**
      * Registra canal de Velocity
@@ -61,10 +54,8 @@ public class ChannelManager {
             String velocityChannel = "velocity:announce";
             plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, velocityChannel);
             registeredChannels.add(velocityChannel);
-            plugin.getLogger().info("✓ Canal Velocity registrado");
-        } catch (Exception e) {
-            plugin.getLogger().info("Velocity no disponible");
-        }
+            plugin.getLogger().info("Velocity channel registered.");
+        } catch (Exception ignored) {}
     }
 
     /**
@@ -74,9 +65,9 @@ public class ChannelManager {
         try {
             plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, channel, receiver);
             registeredChannels.add(channel);
-            plugin.getLogger().info("✓ Canal de recepción registrado: " + channel);
+            plugin.getLogger().info("Incoming channel registered: " + channel);
         } catch (Exception e) {
-            plugin.getLogger().severe("✗ Error registrando canal: " + e.getMessage());
+            plugin.getLogger().warning("Failed to register channel: " + channel);
         }
     }
 
@@ -95,6 +86,7 @@ public class ChannelManager {
     /**
      * Verifica si es Paper moderno (1.20.4+)
      */
+    /* No necesario sin BungeeCord
     private boolean isPaperModern() {
         try {
             // Intentar detectar versión
@@ -107,11 +99,11 @@ public class ChannelManager {
             return false;
         }
     }
+    */
 
     public void unregisterChannels() {
         plugin.getServer().getMessenger().unregisterOutgoingPluginChannel(plugin);
         plugin.getServer().getMessenger().unregisterIncomingPluginChannel(plugin);
         registeredChannels.clear();
-        plugin.getLogger().info("Canales desregistrados");
     }
 }

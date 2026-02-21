@@ -1,11 +1,13 @@
-package org.ccoding.liveannounce.proxy.bridges;
+/*package org.ccoding.liveannounce.proxy.bridges;
 
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.messaging.ChannelManager;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -13,10 +15,20 @@ import java.util.Collection;
 
 public class BungeeCordBridge implements Bridge {
     private final LiveAnnounce plugin;
-    private static final String CUSTOM_CHANNEL = "liveAnnounce:announce";
+    private boolean available = false;
 
     public BungeeCordBridge(LiveAnnounce plugin) {
         this.plugin = plugin;
+        initialize();
+    }
+
+    private void initialize() {
+        // Verificar disponibilidad
+        available = plugin.getServer().spigot().getConfig().getBoolean("settings.bungeecord", false);
+
+        if (available) {
+            plugin.getLogger().info("✓ Bridge BungeeCord disponible");
+        }
     }
 
     @Override
@@ -26,74 +38,58 @@ public class BungeeCordBridge implements Bridge {
 
     @Override
     public boolean isAvailable() {
-        return plugin.getServer().spigot().getConfig().getBoolean("settings.bungeecord", false);
+        return available;
     }
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        if (!isAvailable()) {
-            // Fallback local
-            broadcastLocally(playerName, platform, link);
-            return;
-        }
 
         Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
 
         if (onlinePlayers.isEmpty()) {
             plugin.getLogger().warning("No hay jugadores para enviar anuncio a BungeeCord");
-            broadcastLocally(playerName, platform, link);
             return;
         }
 
         try {
-            // 1. Enviar a otros servidores vía BungeeCord
+            // ENVIAR UNA SOLA VEZ a través de BungeeCord
             sendToOtherServers(playerName, platform, link);
 
-            // 2. También enviar localmente
-            broadcastLocally(playerName, platform, link);
-
-            plugin.getLogger().info("✓ Anuncio enviado a toda la red BungeeCord");
+            // NO hacer broadcast local - AnnouncementReceiver lo mostrará cuando llegue
+            plugin.getLogger().info("✓ Anuncio enviado a red BungeeCord");
 
         } catch (Exception e) {
-            plugin.getLogger().severe("Error enviando anuncio: " + e.getMessage());
+            plugin.getLogger().severe("Error enviando anuncio a BungeeCord: " + e.getMessage());
             broadcastLocally(playerName, platform, link);
         }
     }
 
-    /**
-     * Envía datos estructurados a otros servidores
-     */
     private void sendToOtherServers(String playerName, String platform, String link) throws Exception {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        // Comando BungeeCord: Forward (reenviar otros servidores)
         out.writeUTF("Forward");
-        out.writeUTF("ALL");                   // A todos los servidores
-        out.writeUTF(CUSTOM_CHANNEL);          // Nuestro canal personalizado
+        out.writeUTF("ALL");
+        out.writeUTF(ChannelManager.CHANNEL_ANNOUNCE);
 
-        // Serializar datos
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
         DataOutputStream msgout = new DataOutputStream(msgbytes);
 
-        msgout.writeUTF(playerName);  // Jugador
-        msgout.writeUTF(platform);    // Plataforma
-        msgout.writeUTF(link);        // Enlace
+        msgout.writeUTF(playerName);
+        msgout.writeUTF(platform);
+        msgout.writeUTF(link);
 
-        // Escribir longitud y datos
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
 
-        // Enviar a BungeeCord
         Player player = plugin.getServer().getOnlinePlayers().iterator().next();
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+
+
+        String bungeeChannel = plugin.getChannelManager().getBungeeCordChannel();
+        player.sendPluginMessage(plugin, bungeeChannel, out.toByteArray());
     }
 
-    /**
-     * Envía solo en este servidor (fallback/local)
-     */
     private void broadcastLocally(String playerName, String platform, String link) {
-        // Usar tu AnnouncementFormatter existente
-        net.md_5.bungee.api.chat.TextComponent[] components =
+        TextComponent[] components =
                 org.ccoding.liveannounce.utils.AnnouncementFormatter.createAnnouncement(
                         playerName, platform, link
                 );
@@ -101,9 +97,11 @@ public class BungeeCordBridge implements Bridge {
         if (components == null || components.length == 0) return;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            for (net.md_5.bungee.api.chat.TextComponent component : components) {
+            for (TextComponent component : components) {
                 player.spigot().sendMessage(component);
             }
         }
     }
 }
+
+*/
