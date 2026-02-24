@@ -1,18 +1,14 @@
 package org.ccoding.liveannounce.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
-import org.ccoding.liveannounce.managers.AnnouncementPipeline;
-import org.ccoding.liveannounce.managers.AnnouncementService;
+import org.ccoding.liveannounce.announcement.service.AnnouncementPipeline;
 import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
-import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.ChatUtils;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class DirectoCommand implements CommandExecutor {
 

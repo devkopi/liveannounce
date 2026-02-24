@@ -1,4 +1,4 @@
-package org.ccoding.liveannounce.managers;
+package org.ccoding.liveannounce.announcement.service;
 
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.proxy.BridgeManager;

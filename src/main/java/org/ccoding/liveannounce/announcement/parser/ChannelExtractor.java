@@ -1,4 +1,4 @@
-package org.ccoding.liveannounce.utils;
+package org.ccoding.liveannounce.announcement.parser;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;

@@ -1,4 +1,7 @@
-package org.ccoding.liveannounce.utils;
+package org.ccoding.liveannounce.announcement.model;
+
+import org.ccoding.liveannounce.announcement.parser.ChannelExtractor;
+import org.ccoding.liveannounce.utils.ColorCache;
 
 public class AnnouncementData {
     

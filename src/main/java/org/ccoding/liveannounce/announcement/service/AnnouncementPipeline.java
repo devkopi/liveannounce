@@ -1,11 +1,11 @@
-package org.ccoding.liveannounce.managers;
+package org.ccoding.liveannounce.announcement.service;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.proxy.BridgeManager;
-import org.ccoding.liveannounce.utils.AnnouncementData;
+import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import net.md_5.bungee.api.chat.TextComponent;
 

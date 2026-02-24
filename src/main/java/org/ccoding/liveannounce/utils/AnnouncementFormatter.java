@@ -4,10 +4,10 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 
 /**
  * Crea anuncios de stream usando componentes de chat
