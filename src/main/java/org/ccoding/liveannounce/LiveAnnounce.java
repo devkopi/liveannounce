@@ -54,10 +54,17 @@ public class LiveAnnounce extends JavaPlugin {
         this.getCommand("directo").setExecutor(new DirectoCommand());
         this.getCommand("liveannounce").setExecutor(new LiveAnnounceCommand());
 
-        getLogger().info("==================================");
-        getLogger().info("LiveAnnounce v" + getDescription().getVersion());
-        getLogger().info("Plugin activado correctamente!");
-        getLogger().info("==================================");
+        getLogger().info("╔══════════════════════════════════════╗");
+        getLogger().info("║                                      ║");
+        getLogger().info("║  ██╗     ██╗██╗   ██╗███████╗        ║");
+        getLogger().info("║  ██║     ██║██║   ██║██╔════╝        ║");
+        getLogger().info("║  ██║     ██║██║   ██║█████╗          ║");
+        getLogger().info("║  ██║     ██║╚██╗ ██╔╝██╔══╝          ║");
+        getLogger().info("║  ███████╗██║ ╚████╔╝ ███████╗        ║");
+        getLogger().info("║  ╚══════╝╚═╝  ╚═══╝  ╚══════╝        ║");
+        getLogger().info("║                                      ║");
+        getLogger().info("║  Announce v" + getDescription().getVersion() + " - " + getDescription().getAuthors().get(0) + "           ║");
+        getLogger().info("╚══════════════════════════════════════╝");
     }
 
     @Override

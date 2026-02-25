@@ -1,4 +1,4 @@
-# LiveAnnounce Configuration v1.1.2 - ¡PROXY UPDATE!
+# LiveAnnounce Configuration v1.1.3 - ¡SOUND UPDATE!
 
 # ============================================
 # PROXY CONFIGURATION - LiveAnnounce
@@ -68,3 +68,23 @@ cooldown:
   enabled: true
   seconds: 30
   message: "&cYou must wait {time}s before using this command again."
+
+# ========== COOLDOWN ==========
+# Configuración de sonidos
+sounds:
+  # Activar/desactivar todos los sonidos
+  enabled: true
+  # Reproducir sonido al sender cuando el comando se ejecute correctamente
+  notify-sender: true
+
+  # Sonido para cuando se anuncia un stream (todos lo escuchan)
+  announce:
+    sound: "ENTITY_PLAYER_LEVELUP"
+    volume: 1.0
+    pitch: 1.0
+
+  # Sonido de éxito para el que ejecuta el comando
+  success:
+    sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+    volume: 0.5
+    pitch: 1.5

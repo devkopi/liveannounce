@@ -9,6 +9,7 @@ import org.ccoding.liveannounce.announcement.service.AnnouncementPipeline;
 import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
+import org.ccoding.liveannounce.utils.SoundUtils;
 
 public class DirectoCommand implements CommandExecutor {
 
@@ -69,6 +70,11 @@ public class DirectoCommand implements CommandExecutor {
                 player.getName(),
                 platformName,
                 link);
+
+        // Reproducir sonido al jugador que ejecutó el comando
+        if (plugin.getConfig().getBoolean("sounds.notify-sender", true)) {
+            SoundUtils.playSoundToPlayer(player, "success");
+        }
 
         if (cooldown != null) {
             cooldown.apply(player.getUniqueId());

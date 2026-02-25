@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.ccoding.liveannounce.utils.SoundUtils;
 
 /**
  * Esta clase es responsable de manejar el flujo completo
@@ -42,5 +43,8 @@ public class AnnouncementService {
                 player.spigot().sendMessage(component);
             }
         }
+
+        // Reproducir el sonido
+        SoundUtils.playSoundToAll("announce");
     }
 }
