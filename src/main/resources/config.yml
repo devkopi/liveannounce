@@ -63,27 +63,21 @@ announcement-formats:
     hover: "&eClick to open the stream!"
     line2: "&8&m--------------------------------------------------"
 
-# ========== COOLDOWN ==========
-cooldown:
-  enabled: true
-  seconds: 30
-  message: "&cYou must wait {time}s before using this command again."
-
-# ========== COOLDOWN ==========
-# Configuración de sonidos
+# ========== SOUNDS CONFIGURATION ==========
+# Sound settings for announcements
 sounds:
-  # Activar/desactivar todos los sonidos
+  # Enable/disable all sounds globally
   enabled: true
-  # Reproducir sonido al sender cuando el comando se ejecute correctamente
+  # Play a sound to the command sender when successfully executed
   notify-sender: true
 
-  # Sonido para cuando se anuncia un stream (todos lo escuchan)
+  # Sound played when a stream is announced (everyone hears it)
   announce:
     sound: "ENTITY_PLAYER_LEVELUP"
     volume: 1.0
     pitch: 1.0
 
-  # Sonido de éxito para el que ejecuta el comando
+  # Success sound for the command executor
   success:
     sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
     volume: 0.5
