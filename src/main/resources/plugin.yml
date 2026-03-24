@@ -18,14 +18,27 @@ commands:
     aliases: [la]
 
 permissions:
-  # /directo (solo streamers)
   liveannounce.directo:
-    description: "Permite usar /directo"
+    description: "Permite usar el comando /directo para anunciar streams"
     default: op
 
-  # Bypass / Administradores
+  liveannounce.directo.bypass.cooldown:
+    description: "Permite omitir el tiempo de espera (cooldown) del comando /directo"
+    default: op
+
   liveannounce.admin:
-    description: "Permisos de administración"
+    description: "Acceso total a todos los comandos de administración del plugin"
     default: op
     children:
       liveannounce.directo: true
+      liveannounce.directo.bypass.cooldown: true
+      liveannounce.admin.gui: true
+      liveannounce.admin.history: true
+
+  liveannounce.admin.gui:
+    description: "Permite abrir la interfaz administrativa /la admin"
+    default: op
+
+  liveannounce.admin.history:
+    description: "Permite ver el historial de anuncios"
+    default: op

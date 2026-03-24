@@ -31,7 +31,10 @@ public class DirectoCommand implements CommandExecutor {
 
         CooldownManager cooldown = LiveAnnounce.getInstance().getAnnouncementCooldown();
 
-        if (cooldown != null && !cooldown.canUse(player.getUniqueId())) {
+        // Verificar si el jugador tiene permiso para saltarse el cooldown
+        boolean hasBypass = player.hasPermission("liveannounce.directo.bypass.cooldown") || player.isOp();
+
+        if (!hasBypass && cooldown != null && !cooldown.canUse(player.getUniqueId())) {
             long remaining = cooldown.getRemaining(player.getUniqueId());
 
             String message = LiveAnnounce.getInstance().getConfig().getString("cooldown.message", "&cYou must wait {time}s.");

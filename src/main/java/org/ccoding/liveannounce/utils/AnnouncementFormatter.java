@@ -28,16 +28,17 @@ public class AnnouncementFormatter {
     private static boolean initialized = false;
 
     // Constructor privado - no se puede instanciar
-    private AnnouncementFormatter() {}
+    private AnnouncementFormatter() {
+    }
 
     /**
      * Carga los formatos desde la configuración
      */
     public static void initialize(FileConfiguration config) {
-        if (initialized) return;
+        if (initialized)
+            return;
 
-        ConfigurationSection formatsSection =
-                config.getConfigurationSection("announcement-formats.default");
+        ConfigurationSection formatsSection = config.getConfigurationSection("announcement-formats.default");
 
         for (FormatKey key : FormatKey.values()) {
             FORMATS[key.ordinal()] = formatsSection != null
@@ -48,20 +49,25 @@ public class AnnouncementFormatter {
         initialized = true;
     }
 
-
-
     /**
      * Valores por defecto si no hay configuración
      */
     private static String getDefaultFormat(FormatKey key) {
         switch (key) {
-            case LINE1: return "&8&m--------------------------------------------------";
-            case TITLE: return "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡";
-            case DESCRIPTION: return "&f{player} &7is now streaming live";
-            case LINK: return "&7Join now! {color}&n{link}";
-            case HOVER: return "&eClick to open the stream!";
-            case LINE2: return "&8&m--------------------------------------------------";
-            default: return "&7[" + key + "]";
+            case LINE1:
+                return "&8&m--------------------------------------------------";
+            case TITLE:
+                return "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡";
+            case DESCRIPTION:
+                return "&f{player} &7is now streaming live";
+            case LINK:
+                return "&7Join now! {color}&n{link}";
+            case HOVER:
+                return "&eClick to open the stream!";
+            case LINE2:
+                return "&8&m--------------------------------------------------";
+            default:
+                return "&7[" + key + "]";
         }
     }
 
@@ -69,13 +75,12 @@ public class AnnouncementFormatter {
      * Crea un anuncio completo
      */
     public static TextComponent[] createAnnouncement(String playerName,
-                                                     String platformName,
-                                                     String link) {
+            String platformName,
+            String link) {
         // Verificar que esté inicializado
         if (!initialized) {
             LiveAnnounce.getInstance().getLogger().warning(
-                    "AnnouncementFormatter not initialized!"
-            );
+                    "AnnouncementFormatter not initialized!");
             return new TextComponent[0];
         }
 
@@ -90,8 +95,7 @@ public class AnnouncementFormatter {
                 createClickableLink(
                         FORMATS[FormatKey.LINK.ordinal()],
                         FORMATS[FormatKey.HOVER.ordinal()],
-                        data
-                ),
+                        data),
                 createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data)
         };
     }
@@ -114,8 +118,8 @@ public class AnnouncementFormatter {
     }
 
     private static TextComponent createClickableLink(String linkTemplate,
-                                                     String hoverTemplate,
-                                                     AnnouncementData data) {
+            String hoverTemplate,
+            AnnouncementData data) {
         String linkText = data.applyToTemplate(linkTemplate);
         String hoverText = data.applyToTemplate(hoverTemplate);
 
@@ -123,8 +127,7 @@ public class AnnouncementFormatter {
         component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, data.getLink()));
         component.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(ChatUtils.color(hoverText)).create()
-        ));
+                new ComponentBuilder(ChatUtils.color(hoverText)).create()));
 
         return component;
     }
