@@ -82,3 +82,12 @@ sounds:
     sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
     volume: 0.5
     pitch: 1.5
+
+# ========== DISCORD WEBHOOK CONFIGURATION ==========
+discord:
+  enabled: false
+  webhook-url: "https://discord.com/api/webhooks/..."
+  embed:
+    color: 16711680 # Código decimal del color rojo (ej. 16711680)
+    title: "⚡ ¡{player} está en directo en {platform}! ⚡"
+    description: "¡Únete ahora haciendo click aquí!\n{link}"

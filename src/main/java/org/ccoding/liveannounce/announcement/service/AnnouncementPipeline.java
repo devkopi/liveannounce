@@ -32,6 +32,9 @@ public class AnnouncementPipeline {
                     // Creamos los datos del anuncio (solo objetos Java, sin Bukkit API)
                     AnnouncementData data = new AnnouncementData(playerName, platformName, link);
 
+                    // Enviamos el Webhook de Discord (es Seguro ya que estamos en hilo asíncrono)
+                    org.ccoding.liveannounce.discord.DiscordManager.sendWebhook(data);
+
                     // Volvemos al main thread para interactuar con jugadores
                     Bukkit.getScheduler().runTask(
                             LiveAnnounce.getInstance(),
