@@ -54,14 +54,15 @@ platform-colors:
   default: "&6"     # Gold
 
 # ========== ANNOUNCEMENT FORMAT CONFIGURATION ==========
+# Supports legacy colors (&) and MiniMessage (<gradient>, <rainbow>, <red>, etc.)
 announcement-formats:
   default:
-    line1: "&8&m--------------------------------------------------"
-    title: "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡"  # ← Usa {color}
-    description: "&f{player} &7is now streaming live"
-    link: "&7Join now! {color}&n{link}"  # ← Usa {color}
-    hover: "&eClick to open the stream!"
-    line2: "&8&m--------------------------------------------------"
+    line1: "<gradient:#555555:#aaaaaa>&m--------------------------------------------------</gradient>"
+    title: "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡"
+    description: "&f{player} &7is now <rainbow>streaming live</rainbow>"
+    link: "&7Join now! {color}&n{link}"
+    hover: "<yellow>Click to open the <bold>stream</bold>!"
+    line2: "<gradient:#555555:#aaaaaa>&m--------------------------------------------------</gradient>"
 
 # ========== SOUNDS CONFIGURATION ==========
 # Sound settings for announcements

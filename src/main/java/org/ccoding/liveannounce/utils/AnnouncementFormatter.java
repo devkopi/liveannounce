@@ -1,16 +1,18 @@
 package org.ccoding.liveannounce.utils;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Crea anuncios de stream usando componentes de chat
+ * Crea anuncios de stream usando componentes de chat modernos (Adventure)
  * Ahora mucho más optimizado y organizado
  */
 public class AnnouncementFormatter {
@@ -74,60 +76,52 @@ public class AnnouncementFormatter {
     /**
      * Crea un anuncio completo
      */
-    public static TextComponent[] createAnnouncement(String playerName,
+    public static List<Component> createAnnouncement(String playerName,
             String platformName,
             String link) {
         // Verificar que esté inicializado
         if (!initialized) {
             LiveAnnounce.getInstance().getLogger().warning(
                     "AnnouncementFormatter not initialized!");
-            return new TextComponent[0];
+            return new ArrayList<>();
         }
 
-        // Crear objeto con todos los datos (REEMPLAZA A LOS HASHMAPS)
+        // Crear objeto con todos los datos
         AnnouncementData data = new AnnouncementData(playerName, platformName, link);
 
-        // Crear cada parte del anuncio
-        return new TextComponent[] {
-                createFormattedLine(FORMATS[FormatKey.LINE1.ordinal()], data),
-                createFormattedTitle(FORMATS[FormatKey.TITLE.ordinal()], data),
-                createFormattedDescription(FORMATS[FormatKey.DESCRIPTION.ordinal()], data),
-                createClickableLink(
-                        FORMATS[FormatKey.LINK.ordinal()],
-                        FORMATS[FormatKey.HOVER.ordinal()],
-                        data),
-                createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data)
-        };
+        List<Component> components = new ArrayList<>();
+        components.add(createFormattedLine(FORMATS[FormatKey.LINE1.ordinal()], data));
+        components.add(createFormattedLine(FORMATS[FormatKey.TITLE.ordinal()], data));
+        components.add(createFormattedLine(FORMATS[FormatKey.DESCRIPTION.ordinal()], data));
+        components.add(createClickableLink(
+                FORMATS[FormatKey.LINK.ordinal()],
+                FORMATS[FormatKey.HOVER.ordinal()],
+                data));
+        components.add(createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data));
+
+        return components;
     }
 
     // ========== MÉTODOS PRIVADOS ==========
 
-    private static TextComponent createFormattedLine(String template, AnnouncementData data) {
+    private static Component createFormattedLine(String template, AnnouncementData data) {
         String text = data.applyToTemplate(template);
-        return new TextComponent(ChatUtils.color(text));
+        return ChatUtils.format(text);
     }
 
-    private static TextComponent createFormattedTitle(String template, AnnouncementData data) {
-        String text = data.applyToTemplate(template);
-        return new TextComponent(ChatUtils.color(text));
-    }
-
-    private static TextComponent createFormattedDescription(String template, AnnouncementData data) {
-        String text = data.applyToTemplate(template);
-        return new TextComponent(ChatUtils.color(text));
-    }
-
-    private static TextComponent createClickableLink(String linkTemplate,
+    private static Component createClickableLink(String linkTemplate,
             String hoverTemplate,
             AnnouncementData data) {
         String linkText = data.applyToTemplate(linkTemplate);
         String hoverText = data.applyToTemplate(hoverTemplate);
 
-        TextComponent component = new TextComponent(ChatUtils.color(linkText));
-        component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, data.getLink()));
-        component.setHoverEvent(new HoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(ChatUtils.color(hoverText)).create()));
+        Component component = ChatUtils.format(linkText);
+        
+        // Añadir eventos si hay link
+        if (data.getLink() != null && !data.getLink().isEmpty()) {
+            component = component.clickEvent(ClickEvent.openUrl(data.getLink()));
+            component = component.hoverEvent(HoverEvent.showText(ChatUtils.format(hoverText)));
+        }
 
         return component;
     }

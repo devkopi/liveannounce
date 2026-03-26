@@ -1,9 +1,11 @@
 package org.ccoding.liveannounce.proxy.bridges;
 
+import net.kyori.adventure.text.Component;
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.LiveAnnounce;
-import org.bukkit.Bukkit;
-import net.md_5.bungee.api.chat.TextComponent;
+import org.ccoding.liveannounce.utils.AnnouncementFormatter;
+
+import java.util.List;
 
 public class StandaloneBridge implements Bridge {
     private final LiveAnnounce plugin;
@@ -24,21 +26,16 @@ public class StandaloneBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        // Este bridge solo existe para indicar que NO hay proxy.
+        // En Standalone, el broadcast ya lo maneja el AnnouncementPipeline
     }
 
     private void broadcastLocally(String playerName, String platform, String link) {
-        TextComponent[] components =
-                org.ccoding.liveannounce.utils.AnnouncementFormatter.createAnnouncement(
-                        playerName, platform, link
-                );
+        List<Component> components = AnnouncementFormatter.createAnnouncement(playerName, platform, link);
 
-        if (components == null || components.length == 0) return;
+        if (components == null || components.isEmpty()) return;
 
-        for (org.bukkit.entity.Player player : Bukkit.getOnlinePlayers()) {
-            for (TextComponent component : components) {
-                player.spigot().sendMessage(component);
-            }
+        for (Component component : components) {
+            LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
         }
     }
 }
