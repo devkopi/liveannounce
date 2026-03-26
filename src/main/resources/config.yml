@@ -1,5 +1,13 @@
-# LiveAnnounce Configuration v1.1.3 - ¡SOUND UPDATE!
-
+# LiveAnnounce Configuration v1.1.5 - ¡MINIMESSAGE SUPPORT!
+# ========================================
+# MESSAGE FORMAT
+# ========================================
+# This plugin supports:
+# - MiniMessage (recommended)
+# - Legacy colors (&)
+#
+# IMPORTANT:
+# Do NOT mix both formats in the same line.
 # ============================================
 # PROXY CONFIGURATION - LiveAnnounce
 # ============================================
@@ -57,12 +65,12 @@ platform-colors:
 # Supports legacy colors (&) and MiniMessage (<gradient>, <rainbow>, <red>, etc.)
 announcement-formats:
   default:
-    line1: "<gradient:#555555:#aaaaaa>&m--------------------------------------------------</gradient>"
-    title: "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡"
-    description: "&f{player} &7is now <rainbow>streaming live</rainbow>"
-    link: "&7Join now! {color}&n{link}"
+    line1: "<gradient:#555555:#aaaaaa><bold>--------------------------------------------------</bold></gradient>"
+    title: "<yellow>⚡</yellow> <reset>{color}<bold>¡LIVE ON {platform_upper}!</bold> <yellow>⚡</yellow>"
+    description: "<red>{player}</red> <reset>is now <rainbow>streaming live</rainbow>"
+    link: "<white>Join now!</white> {color}&n{link}"
     hover: "<yellow>Click to open the <bold>stream</bold>!"
-    line2: "<gradient:#555555:#aaaaaa>&m--------------------------------------------------</gradient>"
+    line2: "<gradient:#555555:#aaaaaa><bold>--------------------------------------------------<bold></gradient>"
 
 # ========== SOUNDS CONFIGURATION ==========
 # Sound settings for announcements

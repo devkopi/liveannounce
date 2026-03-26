@@ -23,14 +23,19 @@ public class ChatUtils {
      * @param text El texto a procesar.
      * @return El componente resultante.
      */
+
+    private static final MiniMessage mm = MiniMessage.miniMessage();
+
     public static Component format(String text) {
         if (text == null || text.isEmpty()) return Component.empty();
-        
-        // Primero convertimos los códigos legacy a MiniMessage o directamente a Component
-        // Para máxima compatibilidad, procesamos primero el legacy y luego el resto.
-        return MiniMessage.miniMessage().deserialize(
-            MiniMessage.miniMessage().serialize(LEGACY_SERIALIZER.deserialize(text))
-        );
+
+        // Detecta si usa MiniMessage
+        if (text.contains("<") && text.contains(">")) {
+            return mm.deserialize(text);
+        }
+
+        // Si NO, usa Legacy (&)
+        return LEGACY_SERIALIZER.deserialize(text);
     }
 
     /**
