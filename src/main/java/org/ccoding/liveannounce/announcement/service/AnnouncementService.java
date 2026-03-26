@@ -1,17 +1,16 @@
 package org.ccoding.liveannounce.announcement.service;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.ccoding.liveannounce.utils.SoundUtils;
+
+import java.util.List;
 
 /**
  * Esta clase es responsable de manejar el flujo completo
  * de un anuncio de stream
- *
- * Se decide que se ejecuta en el main thread y que se puede
- * mover a async
  */
 public class AnnouncementService {
 
@@ -23,25 +22,21 @@ public class AnnouncementService {
     public static void broadcastAnnouncement(String playerName, String platformName, String link) {
 
         // Creamos los componentes del anuncio
-        // Es logica de formato
-        TextComponent[] components = AnnouncementFormatter.createAnnouncement(
+        List<Component> components = AnnouncementFormatter.createAnnouncement(
                 playerName,
                 platformName,
                 link
         );
 
         // Si algo salió mal, se sigue
-        if (components == null || components.length == 0) {
+        if (components == null || components.isEmpty()) {
             Bukkit.getLogger().warning("[LiveAnnounce] No se pudieron crear los componentes del anuncio.");
             return;
         }
 
-        // Enviamos el mensaje a todos los jugadores
-        // Esto DEBE ejecutarse en main thread, NUNCA enviar mensaje desde async
-        for (Player player: Bukkit.getOnlinePlayers()) {
-            for (TextComponent component : components) {
-                player.spigot().sendMessage(component);
-            }
+        // Enviamos el mensaje a todos los jugadores usando Adventure
+        for (Component component : components) {
+            LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
         }
 
         // Reproducir el sonido

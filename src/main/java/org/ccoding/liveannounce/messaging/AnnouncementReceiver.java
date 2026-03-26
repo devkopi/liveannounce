@@ -2,12 +2,14 @@ package org.ccoding.liveannounce.messaging;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
-import net.md_5.bungee.api.chat.TextComponent;
+
+import java.util.List;
 
 /**
  * Recibe anuncios de otros servidores a través del proxy
@@ -29,19 +31,17 @@ public class AnnouncementReceiver implements PluginMessageListener {
             String platform = in.readUTF();
             String link = in.readUTF();
 
-            TextComponent[] components = AnnouncementFormatter.createAnnouncement(
+            List<Component> components = AnnouncementFormatter.createAnnouncement(
                     playerName, platform, link
             );
 
-            if (components == null || components.length == 0) {
+            if (components == null || components.isEmpty()) {
                 return;
             }
 
-            // Enviar a todos los jugadores locales
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                for (TextComponent component : components) {
-                    onlinePlayer.spigot().sendMessage(component);
-                }
+            // Enviar a todos los jugadores locales usando Adventure
+            for (Component component : components) {
+                LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
             }
 
         } catch (Exception ignored) {}

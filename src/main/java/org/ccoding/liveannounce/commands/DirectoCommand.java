@@ -39,9 +39,7 @@ public class DirectoCommand implements CommandExecutor {
 
             String message = LiveAnnounce.getInstance().getConfig().getString("cooldown.message", "&cYou must wait {time}s.");
 
-            player.sendMessage(ChatUtils.color(
-                    message.replace("{time}", String.valueOf(remaining))
-            ));
+            ChatUtils.send(player, message.replace("{time}", String.valueOf(remaining)));
             return true;
         }
 
