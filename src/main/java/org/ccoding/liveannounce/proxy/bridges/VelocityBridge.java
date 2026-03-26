@@ -1,16 +1,18 @@
 package org.ccoding.liveannounce.proxy.bridges;
 
+import net.kyori.adventure.text.Component;
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.LiveAnnounce;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
-import net.md_5.bungee.api.chat.TextComponent;
+import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.Collection;
+import java.util.List;
 
 public class VelocityBridge implements Bridge {
     private final LiveAnnounce plugin;
@@ -133,17 +135,12 @@ public class VelocityBridge implements Bridge {
      * Fallback: envía solo en este servidor
      */
     private void broadcastLocally(String playerName, String platform, String link) {
-        TextComponent[] components =
-                org.ccoding.liveannounce.utils.AnnouncementFormatter.createAnnouncement(
-                        playerName, platform, link
-                );
+        List<Component> components = AnnouncementFormatter.createAnnouncement(playerName, platform, link);
 
-        if (components == null || components.length == 0) return;
+        if (components == null || components.isEmpty()) return;
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            for (TextComponent component : components) {
-                player.spigot().sendMessage(component);
-            }
+        for (Component component : components) {
+            LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
         }
     }
 }

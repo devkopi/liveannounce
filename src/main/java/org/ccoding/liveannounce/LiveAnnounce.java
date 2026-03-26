@@ -1,5 +1,7 @@
 package org.ccoding.liveannounce;
 
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
@@ -15,10 +17,16 @@ public class LiveAnnounce extends JavaPlugin {
     private static LiveAnnounce instance;
     private CooldownManager announcementCooldown;
     private ChannelManager channelManager;
+    private BukkitAudiences adventure;
+    private MiniMessage miniMessage;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        // Inicializar Adventure para soporte de mensajes modernos
+        this.adventure = BukkitAudiences.create(this);
+        this.miniMessage = MiniMessage.miniMessage();
 
         // Inicializador gestor de canales
         channelManager = new ChannelManager(this);
@@ -71,6 +79,11 @@ public class LiveAnnounce extends JavaPlugin {
     public void onDisable() {
         getLogger().info("LiveAnnounce desactivado");
 
+        if (this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
+
         // Limpiar canales si están registrados
         if (channelManager != null) {
             channelManager.unregisterChannels();
@@ -79,6 +92,14 @@ public class LiveAnnounce extends JavaPlugin {
 
     public static LiveAnnounce getInstance() {
         return instance;
+    }
+
+    public BukkitAudiences getAdventure() {
+        return adventure;
+    }
+
+    public MiniMessage getMiniMessage() {
+        return miniMessage;
     }
 
     public CooldownManager getAnnouncementCooldown(){
