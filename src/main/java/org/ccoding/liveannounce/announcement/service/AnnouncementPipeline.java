@@ -12,25 +12,27 @@ import java.util.List;
 
 public class AnnouncementPipeline {
 
-    public static void execute(String playerName, String platformName, String link) {
+    public static void execute(Player player, String platformName, String link) {
         Bukkit.getScheduler().runTaskAsynchronously(
                 LiveAnnounce.getInstance(),
                 () -> {
-                    AnnouncementData data = new AnnouncementData(playerName, platformName, link);
+                    String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+                    AnnouncementData data = new AnnouncementData(player.getName(), playerFormat, platformName, link);
                     org.ccoding.liveannounce.discord.DiscordManager.sendWebhook(data);
                     Bukkit.getScheduler().runTask(
                             LiveAnnounce.getInstance(),
-                            () -> broadcast(data)
+                            () -> broadcast(player, data)
                     );
                 }
         );
     }
 
-    private static void broadcast(AnnouncementData data) {
+    private static void broadcast(Player player, AnnouncementData data) {
         List<Component> components = AnnouncementFormatter.createAnnouncement(
-                data.getPlayerName(),
+                player,
                 data.getPlatformName(),
-                data.getLink()
+                data.getLink(),
+                data.getPlayerFormat()
         );
 
         if (components == null || components.isEmpty()) {
@@ -43,7 +45,7 @@ public class AnnouncementPipeline {
             }
         }
 
-        sendToNetwork(data.getPlayerName(), data.getPlatformName(), data.getLink());
+        sendToNetwork(player.getName(), data.getPlatformName(), data.getLink());
     }
 
     private static void sendToNetwork(String playerName, String platform, String link) {

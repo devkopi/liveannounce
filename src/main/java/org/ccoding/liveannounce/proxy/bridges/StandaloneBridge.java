@@ -30,7 +30,13 @@ public class StandaloneBridge implements Bridge {
     }
 
     private void broadcastLocally(String playerName, String platform, String link) {
-        List<Component> components = AnnouncementFormatter.createAnnouncement(playerName, platform, link);
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+
+        List<Component> components = AnnouncementFormatter.createAnnouncement(
+                null,
+                platform,
+                link,
+                playerFormat);
 
         if (components == null || components.isEmpty()) return;
 

@@ -2,6 +2,7 @@ package org.ccoding.liveannounce.announcement.service;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import org.ccoding.liveannounce.utils.SoundUtils;
@@ -15,17 +16,18 @@ import java.util.List;
 public class AnnouncementService {
 
     /**
-     * @param playerName Nombre del jugador que anuncia
      * @param platformName Nombre de la plataformas
      * @param link Enlace del stream
      */
-    public static void broadcastAnnouncement(String playerName, String platformName, String link) {
+    public static void broadcastAnnouncement(Player player, String platformName, String link) {
 
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
         // Creamos los componentes del anuncio
         List<Component> components = AnnouncementFormatter.createAnnouncement(
-                playerName,
+                player,
                 platformName,
-                link
+                link,
+                playerFormat
         );
 
         // Si algo salió mal, se sigue

@@ -75,10 +75,11 @@ public class VelocityBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
         // Verificar disponibilidad ANTES de enviar
         if (!isAvailable()) {
             // No logueamos nada aquí para no spamear
-            broadcastLocally(playerName, platform, link);
+            broadcastLocally(null, platform, link, playerFormat);
             return;
         }
 
@@ -86,7 +87,7 @@ public class VelocityBridge implements Bridge {
 
         if (onlinePlayers.isEmpty()) {
             plugin.getLogger().warning("No hay jugadores para enviar anuncio a Velocity");
-            broadcastLocally(playerName, platform, link);
+            broadcastLocally(null, platform, link, playerFormat);
             return;
         }
 
@@ -100,7 +101,7 @@ public class VelocityBridge implements Bridge {
 
         } catch (Exception e) {
             plugin.getLogger().severe("Error enviando anuncio a Velocity: " + e.getMessage());
-            broadcastLocally(playerName, platform, link);
+            broadcastLocally(null, platform, link, playerFormat);
         }
     }
 
@@ -134,8 +135,10 @@ public class VelocityBridge implements Bridge {
     /**
      * Fallback: envía solo en este servidor
      */
-    private void broadcastLocally(String playerName, String platform, String link) {
-        List<Component> components = AnnouncementFormatter.createAnnouncement(playerName, platform, link);
+    private void broadcastLocally(Player player, String playerName, String platform, String link) {
+
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        List<Component> components = AnnouncementFormatter.createAnnouncement(null, platform, link, playerFormat);
 
         if (components == null || components.isEmpty()) return;
 

@@ -5,6 +5,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 
@@ -76,9 +77,10 @@ public class AnnouncementFormatter {
     /**
      * Crea un anuncio completo
      */
-    public static List<Component> createAnnouncement(String playerName,
+    public static List<Component> createAnnouncement(Player player,
             String platformName,
-            String link) {
+            String link,
+            String playerFormat) {
         // Verificar que esté inicializado
         if (!initialized) {
             LiveAnnounce.getInstance().getLogger().warning(
@@ -87,33 +89,39 @@ public class AnnouncementFormatter {
         }
 
         // Crear objeto con todos los datos
-        AnnouncementData data = new AnnouncementData(playerName, platformName, link);
+        AnnouncementData data = new AnnouncementData(
+                player != null ? player.getName() : "Unknown",
+                playerFormat,
+                platformName,
+                link);
 
         List<Component> components = new ArrayList<>();
-        components.add(createFormattedLine(FORMATS[FormatKey.LINE1.ordinal()], data));
-        components.add(createFormattedLine(FORMATS[FormatKey.TITLE.ordinal()], data));
-        components.add(createFormattedLine(FORMATS[FormatKey.DESCRIPTION.ordinal()], data));
+        components.add(createFormattedLine(FORMATS[FormatKey.LINE1.ordinal()], data, player));
+        components.add(createFormattedLine(FORMATS[FormatKey.TITLE.ordinal()], data, player));
+        components.add(createFormattedLine(FORMATS[FormatKey.DESCRIPTION.ordinal()], data, player));
         components.add(createClickableLink(
                 FORMATS[FormatKey.LINK.ordinal()],
                 FORMATS[FormatKey.HOVER.ordinal()],
-                data));
-        components.add(createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data));
+                data,
+                player));
+        components.add(createFormattedLine(FORMATS[FormatKey.LINE2.ordinal()], data, player));
 
         return components;
     }
 
     // ========== MÉTODOS PRIVADOS ==========
 
-    private static Component createFormattedLine(String template, AnnouncementData data) {
-        String text = data.applyToTemplate(template);
+    private static Component createFormattedLine(String template, AnnouncementData data, Player player) {
+        String text = data.applyToTemplate(template, player);
         return ChatUtils.format(text);
     }
 
     private static Component createClickableLink(String linkTemplate,
             String hoverTemplate,
-            AnnouncementData data) {
-        String linkText = data.applyToTemplate(linkTemplate);
-        String hoverText = data.applyToTemplate(hoverTemplate);
+            AnnouncementData data,
+            Player player) {
+        String linkText = data.applyToTemplate(linkTemplate, player);
+        String hoverText = data.applyToTemplate(hoverTemplate, player);
 
         Component component = ChatUtils.format(linkText);
         
