@@ -30,9 +30,10 @@ public class AnnouncementReceiver implements PluginMessageListener {
             String playerName = in.readUTF();
             String platform = in.readUTF();
             String link = in.readUTF();
+            String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
 
             List<Component> components = AnnouncementFormatter.createAnnouncement(
-                    playerName, platform, link
+                    null, playerName, platform, link
             );
 
             if (components == null || components.isEmpty()) {

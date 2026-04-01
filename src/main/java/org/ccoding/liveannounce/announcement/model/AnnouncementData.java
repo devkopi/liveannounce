@@ -1,11 +1,15 @@
 package org.ccoding.liveannounce.announcement.model;
 
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.ccoding.liveannounce.announcement.parser.ChannelExtractor;
 import org.ccoding.liveannounce.utils.ColorCache;
+import org.bukkit.entity.Player;
 
 public class AnnouncementData {
-    
+
     private final String playerName;
+    private final String playerFormat;
     private final String platformName;
     private final String platformUpper;
     private final String color;
@@ -13,17 +17,19 @@ public class AnnouncementData {
     private final String channel;
 
     // Constructor - Aquí se calcula todo
-    public AnnouncementData(String playerName, String platformName, String link) {
+    public AnnouncementData(String playerName, String playerFormat, String platformName, String link) {
         this.playerName = playerName;
+        this.playerFormat = playerFormat;
         this.platformName = platformName;
         this.platformUpper = platformName.toUpperCase();
         this.color = ColorCache.getPlatformColor(platformName.toLowerCase());
         this.link = link;
-        this.channel = ChannelExtractor.extract(link, playerName);
+        this.channel = ChannelExtractor.extract(link, playerFormat);
     }
 
     // Getters
-    public String getPlayerName() { return playerName; }
+    public String getPlayerName() { return playerName;}
+    public String getPlayerFormat() { return playerFormat; }
     public String getPlatformName() { return platformName; }
     public String getPlatformUpper() { return platformUpper; }
     public String getColor() { return color; }
@@ -31,19 +37,25 @@ public class AnnouncementData {
     public String getChannel() { return channel; }
 
     // Reemplaza variables
-    public String applyToTemplate(String template) {
+    public String applyToTemplate(String template, Player player) {
         if ( template == null || template.isEmpty()) return "";
 
         StringBuilder result = new StringBuilder(template);
 
-        replaceAll(result, "{player}", playerName);
+        replaceAll(result, "{player}", playerFormat);
         replaceAll(result, "{platform}", platformName);
         replaceAll(result, "{platform_upper}", platformUpper);
         replaceAll(result, "{color}", color);
         replaceAll(result, "{link}", link);
         replaceAll(result, "{channel}", channel);
 
-        return result.toString();
+        String finalMessage = result.toString();
+        // PlaceholderAPI (solo si existe)
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            finalMessage = PlaceholderAPI.setPlaceholders(player, finalMessage);
+        }
+
+        return finalMessage;
     }
 
     // Metodo auxiliar para reemplazar texto

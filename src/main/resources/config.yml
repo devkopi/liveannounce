@@ -33,6 +33,7 @@ proxy:
 # ========== BASIC SETTINGS ==========
 enabled: true
 prefix: "&8[&bLiveAnnounce&8] &7"
+player-format: "%vault_prefix% %player_name%"
 
 # ========== CONFIGURABLE MESSAGES ==========
 messages:

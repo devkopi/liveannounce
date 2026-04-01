@@ -1,9 +1,11 @@
 name: LiveAnnounce
-version: 1.1.4
+version: 1.2.0
 main: org.ccoding.liveannounce.LiveAnnounce
 api-version: "1.16"
 author: ccoding
 description: "Plugin para anunciar directos en el servidor"
+softdepend:
+  - PlaceholderAPI
 
 commands:
   directo:

@@ -68,7 +68,7 @@ public class DirectoCommand implements CommandExecutor {
 
         // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
         AnnouncementPipeline.execute(
-                player.getName(),
+                player,
                 platformName,
                 link);
 
