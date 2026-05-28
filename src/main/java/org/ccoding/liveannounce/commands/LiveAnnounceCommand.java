@@ -84,7 +84,7 @@ public class LiveAnnounceCommand implements CommandExecutor {
         ChatUtils.send(sender, "&6&lLiveAnnounce v" + plugin.getDescription().getVersion());
         ChatUtils.send(sender, "");
         ChatUtils.send(sender, "&eCommands:");
-        ChatUtils.send(sender, "&7• &f/directo <link>&8- &7Announce a live stream");
+        ChatUtils.send(sender, "&7• &f/live (link) &8- &7Announce a live stream");
         ChatUtils.send(sender, "&7• &f/la help &8- &7Shows this help");
         ChatUtils.send(sender, "&7• &f/la reload &8- &7Reloads configuration");
         ChatUtils.send(sender, "&7• &f/la version &8- &7Shows version");
@@ -92,7 +92,7 @@ public class LiveAnnounceCommand implements CommandExecutor {
         ChatUtils.send(sender, "&7• &f/la disable &8- &7Disables the plugin");
         ChatUtils.send(sender, "&7• &f/la status &8- &7Shows status");
         ChatUtils.send(sender, "");
-        ChatUtils.send(sender, "&eAliases: &f/directo, /la");
+        ChatUtils.send(sender, "&eAliases: &f/live, /la help, /stream");
         ChatUtils.send(sender, ChatUtils.getLine());
     }
 

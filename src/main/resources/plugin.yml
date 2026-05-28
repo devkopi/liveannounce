@@ -1,5 +1,5 @@
 name: LiveAnnounce
-version: 1.2.0
+version: 1.3.0
 main: org.ccoding.liveannounce.LiveAnnounce
 api-version: "1.16"
 author: ccoding
@@ -10,7 +10,7 @@ softdepend:
 commands:
   directo:
     description: "Anuncia tu directo a todo el servidor"
-    usage: "/directo <plataforma> <canal>"
+    usage: "/live <plataforma> <canal>"
     aliases: [live, stream, livestream]
     permission: liveannounce.directo
 

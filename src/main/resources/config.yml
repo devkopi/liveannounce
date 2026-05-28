@@ -43,7 +43,7 @@ messages:
   unknown-command: "&cInvalid subcommand. Use &b/la help"
   no-permission: "&cYou don't have permission to execute this command."
   invalid-link: "&cInvalid link.&r &fSupported platforms: Twitch, YouTube, Kick, TikTok"
-  invalid-link-example: "&fExample: &b/directo https://twitch.tv/ccoding"
+  invalid-link-example: "&fExample: &b/live https://twitch.tv/ccoding"
   player-only: "&cThis command can only be used by players."
   command-not-found: "&cCommand not found. Use /la help"
 
@@ -69,9 +69,9 @@ platform-colors:
 announcement-formats:
   default:
     line1: "<gradient:#555555:#aaaaaa><bold>--------------------------------------------------</bold></gradient>"
-    title: "<yellow>⚡</yellow> <reset>{color}<bold>¡LIVE ON {platform_upper}!</bold> <yellow>⚡</yellow>"
-    description: "<red>{player}</red> <reset>is now <rainbow>streaming live</rainbow>"
-    link: "<white>Join now!</white> {color}&n{link}"
+    title: "<yellow>⚡</yellow><reset> <white><bold>¡LIVE ON {platform_upper}!</bold></white> <yellow>⚡</yellow>"
+    description: "<red>{player}</red><reset> <white>is now</white> <rainbow>streaming live</rainbow>"
+    link: "<white>Join now!</white> <yellow>{link}</yellow>"
     hover: "<yellow>Click to open the <bold>stream</bold>!"
     line2: "<gradient:#555555:#aaaaaa><bold>--------------------------------------------------<bold></gradient>"
 
@@ -93,13 +93,33 @@ sounds:
   success:
     sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
     volume: 0.5
-    pitch: 1.5
+    pitch: 1.0
 
 # ========== DISCORD WEBHOOK CONFIGURATION ==========
 discord:
-  enabled: false
-  webhook-url: "https://discord.com/api/webhooks/..."
+  enabled: true
+  webhook-url: "https://discord.com/api/webhooks/link-here"
+  mention-everyone: true
+  message: "🎮 ¡{player} is now streaming in {platform}!"
+
+  # Platform specific colors (automatic URL detection)
+  platform-colors:
+    twitch: 9519747   # Twitch Purple
+    youtube: 16711680 # YouTube Red
+    kick: 5502200     # Kick Green
+    facebook: 1602202 # Facebook Blue
+    tiktok: 0         # TikTok Black
+    unknown: 16766720 # Yellow for unknown platforms
+
   embed:
-    color: 16711680 # Código decimal del color rojo (ej. 16711680)
-    title: "⚡ ¡{player} está en directo en {platform}! ⚡"
-    description: "¡Únete ahora haciendo click aquí!\n{link}"
+    # Default color (if platform is not found)
+    color: 16711680
+
+    title: "🎮 **¡{player} is live!**"
+    description: "**Platform:** {platform}\n\n**Join now!**\n{link}"
+    author: "🎥 New Live Stream"
+    author-icon: "https://cdn-icons-png.flaticon.com/512/1388/1388210.png"
+    footer: "LiveAnnounce • {timestamp}"
+    # Image URL (supports static images and GIFs)
+    # Example GIF: https://i.pinimg.com/originals/54/ad/ed/54aded2832204ae26b6c57ddf7ad4854.gif
+    image-url: "https://i.imgur.com/TDf945M.jpeg"
