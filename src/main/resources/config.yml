@@ -98,7 +98,7 @@ sounds:
 # ========== DISCORD WEBHOOK CONFIGURATION ==========
 discord:
   enabled: true
-  webhook-url: "https://discord.com/api/webhooks/1486025696240472304/aEG3lSz9HFij6Tudq_TYKzMpVyDbArPLMcunZwjHKJB4l9G6yyCWuwjTcGnESKVAGA9G"
+  webhook-url: "https://discord.com/api/webhooks/link-here"
   mention-everyone: true
   message: "🎮 ¡{player} is now streaming in {platform}!"
 
@@ -120,3 +120,6 @@ discord:
     author: "🎥 New Live Stream"
     author-icon: "https://cdn-icons-png.flaticon.com/512/1388/1388210.png"
     footer: "LiveAnnounce • {timestamp}"
+    # Image URL (supports static images and GIFs)
+    # Example GIF: https://i.pinimg.com/originals/54/ad/ed/54aded2832204ae26b6c57ddf7ad4854.gif
+    image-url: "https://i.imgur.com/TDf945M.jpeg"

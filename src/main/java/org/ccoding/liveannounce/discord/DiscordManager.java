@@ -51,6 +51,14 @@ public class DiscordManager {
             String footerText = config.getString("discord.embed.footer", "LiveAnnounce • {timestamp}");
             String authorName = config.getString("discord.embed.author", "🎥 New Live Stream");
 
+            // Imagen del embed
+            String imageUrlTemplate = config.getString("discord.embed.image-url", "");
+            String imageUrl = "";
+            if (imageUrlTemplate != null && !imageUrlTemplate.isEmpty()) {
+                imageUrl = formatText(imageUrlTemplate, data, platformToUse);
+                imageUrl = escapeJson(imageUrl);
+            }
+
             // Mencionm Everyone y Template para que el mensaje se pueda editar
             boolean mentionEveryone = config.getBoolean("discord.mention-everyone", false);
             String messageTemplate = config.getString("discord.message", "");
@@ -85,7 +93,7 @@ public class DiscordManager {
             authorName = escapeJson(authorName);
 
             // Construir JSON
-            String jsonPayload = buildJsonPayload(title, descriptionFormat, color, authorName, avatarUrl, footerText, content, mentionEveryone);
+            String jsonPayload = buildJsonPayload(title, descriptionFormat, color, authorName, avatarUrl, footerText, content, mentionEveryone, imageUrl);
 
             // Enviar petición
             URL url = new URL(webhookUrl);
@@ -132,7 +140,7 @@ public class DiscordManager {
 
     private static String buildJsonPayload(String title, String description, int color,
                                            String authorName, String avatarUrl, String footerText,
-                                           String content, boolean mentionEveryone) {
+                                           String content, boolean mentionEveryone, String imageUrl) {
         StringBuilder json = new StringBuilder();
         json.append("{");
 
@@ -157,6 +165,13 @@ public class DiscordManager {
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
             json.append("\"thumbnail\": {");
             json.append("\"url\": \"").append(avatarUrl).append("\"");
+            json.append("},");
+        }
+
+        // Imagen grande del embed
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            json.append("\"image\": {");
+            json.append("\"url\": \"").append(imageUrl).append("\"");
             json.append("},");
         }
 
