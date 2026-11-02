@@ -16,6 +16,11 @@ public class ChatUtils {
             .useUnusualXRepeatedCharacterHexFormat()
             .build();
 
+    private static final LegacyComponentSerializer BUKKIT_SERIALIZER = LegacyComponentSerializer.builder()
+            .hexColors()
+            .useUnusualXRepeatedCharacterHexFormat()
+            .build();
+
     // ========== MÉTODOS DE COLORES ==========
 
     /**
@@ -36,6 +41,16 @@ public class ChatUtils {
 
         // Si NO, usa Legacy (&)
         return LEGACY_SERIALIZER.deserialize(text);
+    }
+
+    /**
+     * Texto con el formato que Bukkit espera en sendTitle (códigos de sección).
+     */
+    public static String toBukkitText(Component component) {
+        if (component == null) {
+            return "";
+        }
+        return BUKKIT_SERIALIZER.serialize(component);
     }
 
     /**

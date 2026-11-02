@@ -2,7 +2,6 @@ package org.ccoding.liveannounce.announcement.service;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +10,6 @@ import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
-import java.time.Duration;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -108,15 +106,21 @@ public final class AnnouncementDisplay {
             return;
         }
 
-        Title.Times times = Title.Times.times(
-                Duration.ofMillis(fadeIn * 50L),
-                Duration.ofMillis(stay * 50L),
-                Duration.ofMillis(fadeOut * 50L));
-        Title title = Title.title(ChatUtils.format(titleRaw), ChatUtils.format(subtitleRaw), times);
-
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            LiveAnnounce.getInstance().getAdventure().player(online).showTitle(title);
+        String title = blankToNull(ChatUtils.toBukkitText(ChatUtils.format(titleRaw)));
+        String subtitle = blankToNull(ChatUtils.toBukkitText(ChatUtils.format(subtitleRaw)));
+        if (title == null && subtitle == null) {
+            return;
         }
+
+        // The server sends the title packet for its own version.
+        // The shaded Adventure title path targets an old Paper API current servers no longer have.
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            online.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        }
+    }
+
+    private static String blankToNull(String text) {
+        return isBlank(text) ? null : text;
     }
 
     private static void showBar(Player source, AnnouncementData data) {
