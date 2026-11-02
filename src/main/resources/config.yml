@@ -156,3 +156,28 @@ live-sessions:
     footer: "&7{count} live"
     more: "&8+{count} more"
     time-unlimited: "until disconnect"
+
+# ========== ON-SCREEN ANNOUNCEMENT ==========
+# Shown together with the chat announcement. Each part can be turned off.
+# Title times are ticks (20 ticks = 1 second). Caps: fade 40, stay 200.
+# Bossbar seconds are capped at 30. The bar is not refreshed every tick.
+# Do not mix MiniMessage and legacy colors (&) in the same line.
+# {color} is a legacy code, so use it only on a legacy line.
+display:
+  title:
+    enabled: true
+    title: "&e⚡ &f&lLIVE ON {platform_upper} &e⚡"
+    subtitle: "&f{player} &7is live on {platform}"
+    fade-in: 10
+    stay: 70
+    fade-out: 10
+
+  bossbar:
+    enabled: true
+    text: "&e⚡ &f{player} &7is live on {color}{platform}"
+    # PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+    color: YELLOW
+    # SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+    style: SOLID
+    progress: 1.0
+    seconds: 12

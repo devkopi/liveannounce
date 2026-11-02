@@ -51,6 +51,8 @@ public class AnnouncementPipeline {
                 data.getLink(),
                 data.getChannel());
 
+        AnnouncementDisplay.show(player, data);
+
         sendToNetwork(player.getName(), data.getPlatformName(), data.getLink());
     }
 

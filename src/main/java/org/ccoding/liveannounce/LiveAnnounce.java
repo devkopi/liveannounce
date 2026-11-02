@@ -3,6 +3,7 @@ package org.ccoding.liveannounce;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
@@ -63,6 +64,7 @@ public class LiveAnnounce extends JavaPlugin {
 
         LiveSessionManager.load(getConfig(), getLogger());
         LiveSessionManager.startCleanup(this);
+        AnnouncementDisplay.load(getConfig(), getLogger());
         getServer().getPluginManager().registerEvents(new LiveSessionListener(), this);
 
         DirectoCommand directoCommand = new DirectoCommand();
@@ -90,6 +92,7 @@ public class LiveAnnounce extends JavaPlugin {
     public void onDisable() {
         getLogger().info("LiveAnnounce desactivado");
 
+        AnnouncementDisplay.shutdown();
         LiveSessionManager.shutdown();
 
         if (this.adventure != null) {
@@ -142,6 +145,7 @@ public class LiveAnnounce extends JavaPlugin {
         }
 
         LiveSessionManager.reload(this);
+        AnnouncementDisplay.load(getConfig(), getLogger());
     }
 
     public ChannelManager getChannelManager() {

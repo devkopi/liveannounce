@@ -50,8 +50,7 @@ public class AnnouncementData {
         replaceAll(result, "{channel}", channel);
 
         String finalMessage = result.toString();
-        // PlaceholderAPI (solo si existe)
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        if (player != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             finalMessage = PlaceholderAPI.setPlaceholders(player, finalMessage);
         }
 

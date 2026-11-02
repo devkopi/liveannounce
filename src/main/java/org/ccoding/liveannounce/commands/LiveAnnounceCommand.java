@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.announcement.service.LiveSessionPresenter;
 import org.ccoding.liveannounce.managers.MessageManager;
@@ -78,6 +79,7 @@ public class LiveAnnounceCommand implements CommandExecutor, TabCompleter {
                 String statusKey = enabled ? "status-enabled" : "status-disabled";
                 ChatUtils.sendMessage(sender, MessageManager.get(statusKey));
                 ChatUtils.sendMessage(sender, "&7Live now: &f" + LiveSessionManager.activeCount());
+                ChatUtils.sendMessage(sender, AnnouncementDisplay.statusLine());
                 break;
 
             case "live":
