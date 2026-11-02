@@ -3,13 +3,19 @@ package org.ccoding.liveannounce.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.announcement.service.LiveSessionPresenter;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
-public class LiveAnnounceCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+public class LiveAnnounceCommand implements CommandExecutor, TabCompleter {
 
     private final LiveAnnounce plugin;
 
@@ -89,6 +95,38 @@ public class LiveAnnounceCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length != 1) {
+            return Collections.emptyList();
+        }
+
+        List<String> options = new ArrayList<String>();
+        options.add("help");
+        options.add("version");
+        options.add("live");
+        if (sender.hasPermission("liveannounce.admin")) {
+            options.add("reload");
+            options.add("enable");
+            options.add("disable");
+            options.add("status");
+        }
+
+        String prefix = args[0].toLowerCase(Locale.ROOT);
+        if (prefix.isEmpty()) {
+            return options;
+        }
+
+        List<String> matches = new ArrayList<String>();
+        for (int i = 0; i < options.size(); i++) {
+            String option = options.get(i);
+            if (option.startsWith(prefix)) {
+                matches.add(option);
+            }
+        }
+        return matches;
     }
 
     private void showHelp(CommandSender sender) {

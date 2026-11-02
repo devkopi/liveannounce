@@ -3,6 +3,7 @@ package org.ccoding.liveannounce.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.service.AnnouncementPipeline;
@@ -11,7 +12,10 @@ import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 import org.ccoding.liveannounce.utils.SoundUtils;
 
-public class DirectoCommand implements CommandExecutor {
+import java.util.Collections;
+import java.util.List;
+
+public class DirectoCommand implements CommandExecutor, TabCompleter {
 
     private final LiveAnnounce plugin;
 
@@ -81,6 +85,11 @@ public class DirectoCommand implements CommandExecutor {
             cooldown.apply(player.getUniqueId());
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return Collections.emptyList();
     }
 
     // Validar link básico

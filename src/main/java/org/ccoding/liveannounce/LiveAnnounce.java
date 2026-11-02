@@ -65,8 +65,13 @@ public class LiveAnnounce extends JavaPlugin {
         LiveSessionManager.startCleanup(this);
         getServer().getPluginManager().registerEvents(new LiveSessionListener(), this);
 
-        this.getCommand("directo").setExecutor(new DirectoCommand());
-        this.getCommand("liveannounce").setExecutor(new LiveAnnounceCommand());
+        DirectoCommand directoCommand = new DirectoCommand();
+        this.getCommand("directo").setExecutor(directoCommand);
+        this.getCommand("directo").setTabCompleter(directoCommand);
+
+        LiveAnnounceCommand liveAnnounceCommand = new LiveAnnounceCommand();
+        this.getCommand("liveannounce").setExecutor(liveAnnounceCommand);
+        this.getCommand("liveannounce").setTabCompleter(liveAnnounceCommand);
 
         getLogger().info("╔══════════════════════════════════════╗");
         getLogger().info("║                                      ║");
