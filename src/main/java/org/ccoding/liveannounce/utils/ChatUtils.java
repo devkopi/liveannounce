@@ -51,11 +51,18 @@ public class ChatUtils {
     // Enviar mensaje (Metodo para NO APLICAR prefijo a mensajes)
     public static void send(CommandSender sender, String message) {
         if (sender != null && message != null) {
-            if (sender instanceof Player) {
-                LiveAnnounce.getInstance().getAdventure().player((Player) sender).sendMessage(format(message));
-            } else {
-                LiveAnnounce.getInstance().getAdventure().console().sendMessage(format(message));
-            }
+            send(sender, format(message));
+        }
+    }
+
+    public static void send(CommandSender sender, Component component) {
+        if (sender == null || component == null) {
+            return;
+        }
+        if (sender instanceof Player) {
+            LiveAnnounce.getInstance().getAdventure().player((Player) sender).sendMessage(component);
+        } else {
+            LiveAnnounce.getInstance().getAdventure().console().sendMessage(component);
         }
     }
 

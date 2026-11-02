@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 import java.util.List;
@@ -30,7 +31,8 @@ public class AnnouncementReceiver implements PluginMessageListener {
             String playerName = in.readUTF();
             String platform = in.readUTF();
             String link = in.readUTF();
-            String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+
+            LiveSessionManager.register(playerName, platform, link, null);
 
             List<Component> components = AnnouncementFormatter.createAnnouncement(
                     null, playerName, platform, link

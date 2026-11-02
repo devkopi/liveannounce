@@ -4,6 +4,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
+import org.ccoding.liveannounce.announcement.service.LiveSessionPresenter;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
@@ -69,6 +71,16 @@ public class LiveAnnounceCommand implements CommandExecutor {
 
                 String statusKey = enabled ? "status-enabled" : "status-disabled";
                 ChatUtils.sendMessage(sender, MessageManager.get(statusKey));
+                ChatUtils.sendMessage(sender, "&7Live now: &f" + LiveSessionManager.activeCount());
+                break;
+
+            case "live":
+            case "lives":
+                if (!sender.hasPermission("liveannounce.live")) {
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
+                    return true;
+                }
+                LiveSessionPresenter.send(sender);
                 break;
 
             default:
@@ -85,6 +97,7 @@ public class LiveAnnounceCommand implements CommandExecutor {
         ChatUtils.send(sender, "");
         ChatUtils.send(sender, "&eCommands:");
         ChatUtils.send(sender, "&7• &f/live (link) &8- &7Announce a live stream");
+        ChatUtils.send(sender, "&7• &f/la live &8- &7Shows who is live right now");
         ChatUtils.send(sender, "&7• &f/la help &8- &7Shows this help");
         ChatUtils.send(sender, "&7• &f/la reload &8- &7Reloads configuration");
         ChatUtils.send(sender, "&7• &f/la version &8- &7Shows version");

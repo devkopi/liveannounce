@@ -45,6 +45,12 @@ public class AnnouncementPipeline {
             }
         }
 
+        LiveSessionManager.register(
+                data.getPlayerName(),
+                data.getPlatformName(),
+                data.getLink(),
+                data.getChannel());
+
         sendToNetwork(player.getName(), data.getPlatformName(), data.getLink());
     }
 

@@ -123,3 +123,36 @@ discord:
     # Image URL (supports static images and GIFs)
     # Example GIF: https://i.pinimg.com/originals/54/ad/ed/54aded2832204ae26b6c57ddf7ad4854.gif
     image-url: "https://i.imgur.com/TDf945M.jpeg"
+
+# ========== ACTIVE LIVES (/la live) ==========
+# After someone announces, the stream stays on this list.
+# The list is kept in memory. Expired rows are deleted off the main thread.
+# Do not mix MiniMessage and legacy colors (&) in the same line.
+# If a line uses MiniMessage, do not use {color} (that placeholder is a legacy code).
+live-sessions:
+  enabled: true
+
+  # How long a stream stays listed, in seconds.
+  # 0 = no timer. Pair 0 with remove-on-quit: true.
+  # If both would keep rows forever, the plugin uses a 6 hour cap.
+  duration-seconds: 5400
+
+  # true = remove the stream when that player leaves this server.
+  # A stream announced on another server of the network is removed only by the timer.
+  remove-on-quit: false
+
+  # How often expired rows are deleted, in seconds. Minimum 10.
+  cleanup-interval-seconds: 30
+
+  # Rows printed in chat. The rest are counted, not printed. Maximum 50.
+  max-display: 10
+
+  messages:
+    disabled: "&cThe live list is disabled."
+    empty: "&7Nobody is live right now."
+    header: "&6&lLIVE NOW"
+    entry: "&f{player} &7on {color}{platform} &8• &e{channel} &8(&7{time}&8)"
+    hover: "&eClick to open the stream"
+    footer: "&7{count} live"
+    more: "&8+{count} more"
+    time-unlimited: "until disconnect"

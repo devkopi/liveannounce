@@ -16,7 +16,7 @@ commands:
 
   liveannounce:
     description: "Comandos principales del plugin"
-    usage: "/liveannounce [help|version]"
+    usage: "/liveannounce [help|version|live]"
     aliases: [la]
 
 permissions:
@@ -28,12 +28,17 @@ permissions:
     description: "Permite omitir el tiempo de espera (cooldown) del comando /directo"
     default: op
 
+  liveannounce.live:
+    description: "Permite ver quién está en directo con /la live"
+    default: true
+
   liveannounce.admin:
     description: "Acceso total a todos los comandos de administración del plugin"
     default: op
     children:
       liveannounce.directo: true
       liveannounce.directo.bypass.cooldown: true
+      liveannounce.live: true
       liveannounce.admin.gui: true
       liveannounce.admin.history: true
 

@@ -3,8 +3,10 @@ package org.ccoding.liveannounce;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.commands.DirectoCommand;
 import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
+import org.ccoding.liveannounce.listeners.LiveSessionListener;
 import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
@@ -59,6 +61,10 @@ public class LiveAnnounce extends JavaPlugin {
             announcementCooldown = new CooldownManager(cooldownSeconds);
         }
 
+        LiveSessionManager.load(getConfig(), getLogger());
+        LiveSessionManager.startCleanup(this);
+        getServer().getPluginManager().registerEvents(new LiveSessionListener(), this);
+
         this.getCommand("directo").setExecutor(new DirectoCommand());
         this.getCommand("liveannounce").setExecutor(new LiveAnnounceCommand());
 
@@ -78,6 +84,8 @@ public class LiveAnnounce extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("LiveAnnounce desactivado");
+
+        LiveSessionManager.shutdown();
 
         if (this.adventure != null) {
             this.adventure.close();
@@ -127,6 +135,8 @@ public class LiveAnnounce extends JavaPlugin {
         } else {
             announcementCooldown = null;
         }
+
+        LiveSessionManager.reload(this);
     }
 
     public ChannelManager getChannelManager() {

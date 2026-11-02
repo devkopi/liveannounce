@@ -138,6 +138,7 @@ public class DirectoCommand implements CommandExecutor {
         ChatUtils.send(player, "&7• &f/directo &7https://tiktok.com/@username/live");
         ChatUtils.send(player, "");
         ChatUtils.send(player, "&7The plugin will automatically detect the platform.");
+        ChatUtils.send(player, "&7Active streams: &f/la live");
         ChatUtils.send(player, ChatUtils.getLine());
     }
 }
