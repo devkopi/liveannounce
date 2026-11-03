@@ -8,12 +8,10 @@ public class BridgeManager {
 
     public static void initialize(LiveAnnounce plugin) {
 
-        // Leer configuración del proxy
         boolean proxyEnabled = plugin.getConfig().getBoolean("proxy.enabled", true);
         String configType = plugin.getConfig().getString("proxy.type", "auto");
         boolean autoDetect = plugin.getConfig().getBoolean("proxy.auto-detect", true);
 
-        // Si el proxy está deshabilitado, usar standalone inmediatamente
         if (!proxyEnabled) {
             plugin.getLogger().info("Proxy disabled. Using standalone mode.");
             activeBridge = new StandaloneBridge(plugin);
@@ -31,7 +29,6 @@ public class BridgeManager {
 
         activeBridge = detectedBridge;
 
-        // Validación final
         if (activeBridge == null) {
             plugin.getLogger().warning("Could not initialize any bridge. Using standalone.");
             activeBridge = new StandaloneBridge(plugin);
@@ -40,9 +37,6 @@ public class BridgeManager {
         logBridgeInfo(plugin);
     }
 
-    /**
-     * Muestra información del bridge activo
-     */
     private static void logBridgeInfo(LiveAnnounce plugin) {
         if (activeBridge != null) {
             String bridgeName = activeBridge.getName();
@@ -59,13 +53,12 @@ public class BridgeManager {
 
     private static Bridge detectProxy(LiveAnnounce plugin) {
 
-        // --- BUNGEE CORD (DESHABILITADO TEMPORALMENTE) ---
+        // BungeeCord is disabled for now.
         // Bridge bungeeBridge = new BungeeCordBridge(plugin);
         // if (bungeeBridge.isAvailable()) {
         //     return bungeeBridge;
         // }
 
-        // Intentar Velocity (único proxy soportado actualmente)
         try {
             Bridge velocityBridge = new VelocityBridge(plugin);
             if (velocityBridge.isAvailable()) {
@@ -74,13 +67,11 @@ public class BridgeManager {
             }
         } catch (Exception ignored) {}
 
-        // Verificar si el usuario forzó Velocity manualmente
         String manualType = plugin.getConfig().getString("proxy.type", "");
         if ("velocity".equalsIgnoreCase(manualType)) {
             plugin.getLogger().warning("Velocity configured but not available. Check Paper and Velocity setup.");
         }
 
-        // Sin proxy detectado
         return new StandaloneBridge(plugin);
     }
 
@@ -105,9 +96,8 @@ public class BridgeManager {
         }
     }
 
-    // Recargar el sistema de proxy con la configuración actualizada
     public static void reload(LiveAnnounce plugin) {
-        activeBridge = null; // Limpiar bridge actual para evitar conflictos
+        activeBridge = null;
         initialize(plugin);
     }
 

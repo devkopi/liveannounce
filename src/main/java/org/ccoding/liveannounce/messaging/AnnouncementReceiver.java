@@ -7,19 +7,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.model.AnnouncementData;
+import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
+import org.ccoding.liveannounce.announcement.service.ChristmasGreeting;
+import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 import java.util.List;
 
 /**
- * Recibe anuncios de otros servidores a través del proxy
+ * Receives announcements from other servers through the proxy.
  */
 public class AnnouncementReceiver implements PluginMessageListener {
     private static final String CUSTOM_CHANNEL = "liveannounce:announce";
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        // Solo procesar nuestro canal personalizado
         if (!channel.equals(CUSTOM_CHANNEL)) {
             return;
         }
@@ -30,7 +34,15 @@ public class AnnouncementReceiver implements PluginMessageListener {
             String playerName = in.readUTF();
             String platform = in.readUTF();
             String link = in.readUTF();
-            String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+
+            LiveSessionManager.register(playerName, platform, link, null);
+
+            Player localAnnouncer = Bukkit.getPlayerExact(playerName);
+            String playerFormat = localAnnouncer != null
+                    ? LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%")
+                    : playerName;
+            AnnouncementData announcement = new AnnouncementData(playerName, playerFormat, platform, link);
+            AnnouncementDisplay.show(localAnnouncer, announcement);
 
             List<Component> components = AnnouncementFormatter.createAnnouncement(
                     null, playerName, platform, link
@@ -40,9 +52,15 @@ public class AnnouncementReceiver implements PluginMessageListener {
                 return;
             }
 
-            // Enviar a todos los jugadores locales usando Adventure
-            for (Component component : components) {
-                LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
+            ChristmasGreeting.addLine(components, announcement, localAnnouncer);
+
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (MuteManager.isMuted(online.getUniqueId())) {
+                    continue;
+                }
+                for (Component component : components) {
+                    LiveAnnounce.getInstance().getAdventure().player(online).sendMessage(component);
+                }
             }
 
         } catch (Exception ignored) {}

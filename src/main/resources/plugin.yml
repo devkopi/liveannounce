@@ -1,46 +1,56 @@
 name: LiveAnnounce
-version: 1.3.0
+version: 1.4.0
 main: org.ccoding.liveannounce.LiveAnnounce
 api-version: "1.16"
 author: ccoding
-description: "Plugin para anunciar directos en el servidor"
+description: "Announce a live stream to the server"
 softdepend:
   - PlaceholderAPI
 
 commands:
   directo:
-    description: "Anuncia tu directo a todo el servidor"
-    usage: "/live <plataforma> <canal>"
+    description: "Announce your stream to the server"
+    usage: "/live <url>"
     aliases: [live, stream, livestream]
     permission: liveannounce.directo
 
   liveannounce:
-    description: "Comandos principales del plugin"
-    usage: "/liveannounce [help|version]"
+    description: "LiveAnnounce commands"
+    usage: "/liveannounce [help|version|live|toggle]"
     aliases: [la]
 
 permissions:
   liveannounce.directo:
-    description: "Permite usar el comando /directo para anunciar streams"
+    description: "Allows /directo to announce a stream"
     default: op
 
   liveannounce.directo.bypass.cooldown:
-    description: "Permite omitir el tiempo de espera (cooldown) del comando /directo"
+    description: "Skip the cooldown on /directo"
     default: op
 
+  liveannounce.live:
+    description: "View who is live with /la live"
+    default: true
+
+  liveannounce.toggle:
+    description: "Hide stream announcements with /la toggle"
+    default: true
+
   liveannounce.admin:
-    description: "Acceso total a todos los comandos de administración del plugin"
+    description: "Full access to LiveAnnounce admin commands"
     default: op
     children:
       liveannounce.directo: true
       liveannounce.directo.bypass.cooldown: true
+      liveannounce.live: true
+      liveannounce.toggle: true
       liveannounce.admin.gui: true
       liveannounce.admin.history: true
 
   liveannounce.admin.gui:
-    description: "Permite abrir la interfaz administrativa /la admin"
+    description: "Open the admin menu with /la admin"
     default: op
 
   liveannounce.admin.history:
-    description: "Permite ver el historial de anuncios"
+    description: "View the announcement history"
     default: op

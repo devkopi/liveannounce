@@ -26,32 +26,25 @@ public class DiscordManager {
         }
 
         String webhookUrl = config.getString("discord.webhook-url", "");
-        if (webhookUrl == null || webhookUrl.isEmpty() || webhookUrl.contains("/api/webhooks/...")) {
-            LiveAnnounce.getInstance().getLogger()
-                    .warning("Discord webhook está activado pero la URL es inválida o por defecto.");
+        if (isPlaceholderWebhook(webhookUrl)) {
             return;
         }
 
         try {
-            // Obtener URL del avatar del jugador
             String avatarUrl = getPlayerAvatarUrl(data.getPlayerName());
 
-            // Detectar plataforma
             String detectedPlatform = ChannelExtractor.detectPlatform(data.getLink());
             String platformToUse = (data.getPlatformName() != null && !data.getPlatformName().isEmpty())
                     ? data.getPlatformName() : detectedPlatform;
 
-            // Obtener color según plataforma
             int color = getPlatformColor(platformToUse, config);
 
-            // Obtener configuración del embed
-            String title = config.getString("discord.embed.title", "🎮 **¡{player} is live!**");
+            String title = config.getString("discord.embed.title", "**{player} is live!**");
             String descriptionFormat = config.getString("discord.embed.description",
                     "**Platform:** {platform}\n\n**Join now!**\n{link}");
             String footerText = config.getString("discord.embed.footer", "LiveAnnounce • {timestamp}");
             String authorName = config.getString("discord.embed.author", "🎥 New Live Stream");
 
-            // Imagen del embed
             String imageUrlTemplate = config.getString("discord.embed.image-url", "");
             String imageUrl = "";
             if (imageUrlTemplate != null && !imageUrlTemplate.isEmpty()) {
@@ -59,17 +52,13 @@ public class DiscordManager {
                 imageUrl = escapeJson(imageUrl);
             }
 
-            // Mencionm Everyone y Template para que el mensaje se pueda editar
             boolean mentionEveryone = config.getBoolean("discord.mention-everyone", false);
             String messageTemplate = config.getString("discord.message", "");
 
-            // Construir el mensaje final
             String content = "";
             if (messageTemplate != null && !messageTemplate.isEmpty()) {
-                // Formatear el mensaje con variables
                 String formattedMessage = formatText(messageTemplate, data, platformToUse);
 
-                // Añadir @everyone si está activado
                 if (mentionEveryone) {
                     content = "@everyone " + formattedMessage;
                 } else {
@@ -78,24 +67,19 @@ public class DiscordManager {
                 content = escapeJson(content);
             }
 
-            // Reemplazamos las variables
             title = formatText(title, data, platformToUse);
             descriptionFormat = formatText(descriptionFormat, data, platformToUse);
 
-            // Formatear timestamp
             String formattedTime = getFormattedTimestamp();
             footerText = footerText.replace("{timestamp}", formattedTime);
 
-            // Escapar contenido del embed
             title = escapeJson(title);
             descriptionFormat = escapeJson(descriptionFormat);
             footerText = escapeJson(footerText);
             authorName = escapeJson(authorName);
 
-            // Construir JSON
             String jsonPayload = buildJsonPayload(title, descriptionFormat, color, authorName, avatarUrl, footerText, content, mentionEveryone, imageUrl);
 
-            // Enviar petición
             URL url = new URL(webhookUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -123,6 +107,17 @@ public class DiscordManager {
         }
     }
 
+    private static boolean isPlaceholderWebhook(String webhookUrl) {
+        if (webhookUrl == null || webhookUrl.trim().isEmpty()) {
+            return true;
+        }
+        String value = webhookUrl.toLowerCase(Locale.ROOT);
+        return value.contains("link-here")
+                || value.contains("/api/webhooks/...")
+                || value.endsWith("/api/webhooks/")
+                || value.endsWith("/api/webhooks");
+    }
+
     private static int getPlatformColor(String platform, FileConfiguration config) {
         String path = "discord.platform-colors." + platform.toLowerCase();
         if (config.contains(path)) {
@@ -134,8 +129,8 @@ public class DiscordManager {
     private static String getFormattedTimestamp() {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
         String hour = now.format(DateTimeFormatter.ofPattern("h:mm"));
-        String ampm = now.format(DateTimeFormatter.ofPattern("a", new Locale("es", "ES")));
-        return "hoy a las " + hour + " " + ampm;
+        String ampm = now.format(DateTimeFormatter.ofPattern("a", Locale.ENGLISH));
+        return "today at " + hour + " " + ampm;
     }
 
     private static String buildJsonPayload(String title, String description, int color,
@@ -144,10 +139,8 @@ public class DiscordManager {
         StringBuilder json = new StringBuilder();
         json.append("{");
 
-        // Añadir mensaje personalizado si existe
         if (content != null && !content.isEmpty()) {
             json.append("\"content\": \"").append(content).append("\",");
-            // Permitir menciones solo si está activado
             if (mentionEveryone) {
                 json.append("\"allowed_mentions\": {\"parse\": [\"everyone\"]},");
             }
@@ -168,7 +161,6 @@ public class DiscordManager {
             json.append("},");
         }
 
-        // Imagen grande del embed
         if (imageUrl != null && !imageUrl.isEmpty()) {
             json.append("\"image\": {");
             json.append("\"url\": \"").append(imageUrl).append("\"");

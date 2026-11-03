@@ -3,11 +3,23 @@ package org.ccoding.liveannounce.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
+import org.ccoding.liveannounce.announcement.service.ChristmasGreeting;
+import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
+import org.ccoding.liveannounce.announcement.service.LiveSessionPresenter;
 import org.ccoding.liveannounce.managers.MessageManager;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
-public class LiveAnnounceCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+public class LiveAnnounceCommand implements CommandExecutor, TabCompleter {
 
     private final LiveAnnounce plugin;
 
@@ -69,6 +81,34 @@ public class LiveAnnounceCommand implements CommandExecutor {
 
                 String statusKey = enabled ? "status-enabled" : "status-disabled";
                 ChatUtils.sendMessage(sender, MessageManager.get(statusKey));
+                ChatUtils.sendMessage(sender, "&7Live now: &f" + LiveSessionManager.activeCount());
+                ChatUtils.sendMessage(sender, AnnouncementDisplay.statusLine());
+                ChatUtils.sendMessage(sender, ChristmasGreeting.statusLine());
+                ChatUtils.sendMessage(sender, "&7Muted players: &f" + MuteManager.count());
+                break;
+
+            case "toggle":
+                if (!(sender instanceof Player)) {
+                    ChatUtils.sendMessage(sender, MessageManager.get("player-only"));
+                    return true;
+                }
+                if (!sender.hasPermission("liveannounce.toggle")) {
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
+                    return true;
+                }
+                Player player = (Player) sender;
+                boolean muted = MuteManager.toggle(player.getUniqueId());
+                AnnouncementDisplay.onMuteChanged(player, muted);
+                ChatUtils.sendMessage(sender, muted ? MuteManager.mutedMessage() : MuteManager.unmutedMessage());
+                break;
+
+            case "live":
+            case "lives":
+                if (!sender.hasPermission("liveannounce.live")) {
+                    ChatUtils.sendMessage(sender, MessageManager.get("no-permission"));
+                    return true;
+                }
+                LiveSessionPresenter.send(sender);
                 break;
 
             default:
@@ -79,12 +119,47 @@ public class LiveAnnounceCommand implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length != 1) {
+            return Collections.emptyList();
+        }
+
+        List<String> options = new ArrayList<String>();
+        options.add("help");
+        options.add("version");
+        options.add("live");
+        options.add("toggle");
+        if (sender.hasPermission("liveannounce.admin")) {
+            options.add("reload");
+            options.add("enable");
+            options.add("disable");
+            options.add("status");
+        }
+
+        String prefix = args[0].toLowerCase(Locale.ROOT);
+        if (prefix.isEmpty()) {
+            return options;
+        }
+
+        List<String> matches = new ArrayList<String>();
+        for (int i = 0; i < options.size(); i++) {
+            String option = options.get(i);
+            if (option.startsWith(prefix)) {
+                matches.add(option);
+            }
+        }
+        return matches;
+    }
+
     private void showHelp(CommandSender sender) {
         ChatUtils.send(sender, ChatUtils.getLine());
         ChatUtils.send(sender, "&6&lLiveAnnounce v" + plugin.getDescription().getVersion());
         ChatUtils.send(sender, "");
         ChatUtils.send(sender, "&eCommands:");
         ChatUtils.send(sender, "&7• &f/live (link) &8- &7Announce a live stream");
+        ChatUtils.send(sender, "&7• &f/la live &8- &7Shows who is live right now");
+        ChatUtils.send(sender, "&7• &f/la toggle &8- &7Hides or shows stream announcements");
         ChatUtils.send(sender, "&7• &f/la help &8- &7Shows this help");
         ChatUtils.send(sender, "&7• &f/la reload &8- &7Reloads configuration");
         ChatUtils.send(sender, "&7• &f/la version &8- &7Shows version");

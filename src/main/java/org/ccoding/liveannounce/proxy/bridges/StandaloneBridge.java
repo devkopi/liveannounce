@@ -26,11 +26,11 @@ public class StandaloneBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        // En Standalone, el broadcast ya lo maneja el AnnouncementPipeline
+        // Standalone announcements are already sent by AnnouncementPipeline.
     }
 
     private void broadcastLocally(String playerName, String platform, String link) {
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
 
         List<Component> components = AnnouncementFormatter.createAnnouncement(
                 null,

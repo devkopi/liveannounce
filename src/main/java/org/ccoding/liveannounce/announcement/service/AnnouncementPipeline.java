@@ -7,6 +7,7 @@ import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.proxy.BridgeManager;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class AnnouncementPipeline {
         Bukkit.getScheduler().runTaskAsynchronously(
                 LiveAnnounce.getInstance(),
                 () -> {
-                    String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+                    String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
                     AnnouncementData data = new AnnouncementData(player.getName(), playerFormat, platformName, link);
                     org.ccoding.liveannounce.discord.DiscordManager.sendWebhook(data);
                     Bukkit.getScheduler().runTask(
@@ -39,11 +40,24 @@ public class AnnouncementPipeline {
             return;
         }
 
+        ChristmasGreeting.addLine(components, data, player);
+
         for (Player p : Bukkit.getOnlinePlayers()) {
+            if (MuteManager.isMuted(p.getUniqueId())) {
+                continue;
+            }
             for (Component component : components) {
                 LiveAnnounce.getInstance().getAdventure().player(p).sendMessage(component);
             }
         }
+
+        LiveSessionManager.register(
+                data.getPlayerName(),
+                data.getPlatformName(),
+                data.getLink(),
+                data.getChannel());
+
+        AnnouncementDisplay.show(player, data);
 
         sendToNetwork(player.getName(), data.getPlatformName(), data.getLink());
     }

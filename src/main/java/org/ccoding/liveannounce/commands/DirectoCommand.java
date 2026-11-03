@@ -3,6 +3,7 @@ package org.ccoding.liveannounce.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.service.AnnouncementPipeline;
@@ -11,7 +12,10 @@ import org.ccoding.liveannounce.managers.MessageManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 import org.ccoding.liveannounce.utils.SoundUtils;
 
-public class DirectoCommand implements CommandExecutor {
+import java.util.Collections;
+import java.util.List;
+
+public class DirectoCommand implements CommandExecutor, TabCompleter {
 
     private final LiveAnnounce plugin;
 
@@ -31,7 +35,6 @@ public class DirectoCommand implements CommandExecutor {
 
         CooldownManager cooldown = LiveAnnounce.getInstance().getAnnouncementCooldown();
 
-        // Verificar si el jugador tiene permiso para saltarse el cooldown
         boolean hasBypass = player.hasPermission("liveannounce.directo.bypass.cooldown") || player.isOp();
 
         if (!hasBypass && cooldown != null && !cooldown.canUse(player.getUniqueId())) {
@@ -53,26 +56,21 @@ public class DirectoCommand implements CommandExecutor {
             return true;
         }
 
-        // Unir todos los argumentos (el link)
         String link = String.join(" ", args);
 
-        // Verificar que sea un link válido
         if (!isValidLink(link)) {
             ChatUtils.sendMessage(player, MessageManager.get("invalid-link"));
             ChatUtils.sendMessage(player, MessageManager.get("invalid-link-example"));
             return true;
         }
 
-        // Detectar plataforma (SOLO EL NOMBRE, NO EL COLOR)
         String platformName = detectPlatform(link);
 
-        // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
         AnnouncementPipeline.execute(
                 player,
                 platformName,
                 link);
 
-        // Reproducir sonido al jugador que ejecutó el comando
         if (plugin.getConfig().getBoolean("sounds.notify-sender", true)) {
             SoundUtils.playSoundToPlayer(player, "success");
         }
@@ -83,7 +81,11 @@ public class DirectoCommand implements CommandExecutor {
         return true;
     }
 
-    // Validar link básico
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return Collections.emptyList();
+    }
+
     private boolean isValidLink(String url) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             return false;
@@ -97,7 +99,6 @@ public class DirectoCommand implements CommandExecutor {
                 lower.contains("tiktok.com/");
     }
 
-    // Detectar plataforma (Devuelve solo String)
     private String detectPlatform(String url) {
         String lower = url.toLowerCase();
 
@@ -138,6 +139,7 @@ public class DirectoCommand implements CommandExecutor {
         ChatUtils.send(player, "&7• &f/directo &7https://tiktok.com/@username/live");
         ChatUtils.send(player, "");
         ChatUtils.send(player, "&7The plugin will automatically detect the platform.");
+        ChatUtils.send(player, "&7Active streams: &f/la live");
         ChatUtils.send(player, ChatUtils.getLine());
     }
 }

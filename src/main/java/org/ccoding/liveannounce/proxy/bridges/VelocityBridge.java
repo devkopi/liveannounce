@@ -18,7 +18,6 @@ public class VelocityBridge implements Bridge {
     private final LiveAnnounce plugin;
     private static final String VELOCITY_CHANNEL = "velocity:announce";
 
-    // Cache para evitar logs repetitivos
     private boolean paperChecked = false;
     private boolean isPaper = false;
 
@@ -33,41 +32,32 @@ public class VelocityBridge implements Bridge {
 
     @Override
     public boolean isAvailable() {
-        // Velocity SOLO funciona en Paper, y requiere configuración manual
-        // Es más confiable que el admin especifique si hay red o no
-
         boolean paper = isPaperServer();
         boolean configEnabled = plugin.getConfig().getBoolean("proxy.velocity-enabled", false);
         boolean hasNetwork = plugin.getConfig().getBoolean("proxy.has-network", false);
 
-        // Solo mostrar logs la primera vez
         if (!paperChecked) {
             if (paper && configEnabled) {
-                plugin.getLogger().info("✓ Velocity configurado manualmente en config.yml");
+                plugin.getLogger().info("Velocity enabled in config.yml");
                 if (hasNetwork) {
-                    plugin.getLogger().info("✓ Red Velocity detectada (configurada manualmente)");
+                    plugin.getLogger().info("Velocity network enabled in config.yml");
                 } else {
-                    plugin.getLogger().info("ℹ Red Velocity deshabilitada en config.yml");
-                    plugin.getLogger().info("  Establece 'proxy.has-network: true' si hay otros servidores");
+                    plugin.getLogger().info("Velocity network disabled in config.yml");
+                    plugin.getLogger().info("Set proxy.has-network to true when more than one server is connected");
                 }
             }
             paperChecked = true;
             isPaper = paper;
         }
 
-        // Velocity requiere: Paper + Configuración manual + Red activa
         return paper && configEnabled && hasNetwork;
     }
 
-    /**
-     * Verifica si es un servidor Paper (requerido para Velocity)
-     */
     private boolean isPaperServer() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
             return true;
         } catch (ClassNotFoundException e) {
-            // También verificar por nombre
             String serverName = Bukkit.getServer().getName();
             return serverName.contains("Paper") || serverName.contains("paper");
         }
@@ -75,10 +65,8 @@ public class VelocityBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
-        // Verificar disponibilidad ANTES de enviar
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
         if (!isAvailable()) {
-            // No logueamos nada aquí para no spamear
             broadcastLocally(null, platform, link, playerFormat);
             return;
         }
@@ -86,37 +74,27 @@ public class VelocityBridge implements Bridge {
         Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
 
         if (onlinePlayers.isEmpty()) {
-            plugin.getLogger().warning("No hay jugadores para enviar anuncio a Velocity");
+            plugin.getLogger().warning("No player is online to forward the announcement to Velocity");
             broadcastLocally(null, platform, link, playerFormat);
             return;
         }
 
         try {
-            // Enviar a otros servidores SOLO si hay red configurada
             sendToVelocity(playerName, platform, link);
-            plugin.getLogger().info("✓ Anuncio enviado a red Velocity");
-
-            // El envío local ya lo hace AnnouncementPipeline
-            // No necesitamos broadcastLocally aquí
-
+            plugin.getLogger().info("Announcement sent to the Velocity network");
         } catch (Exception e) {
-            plugin.getLogger().severe("Error enviando anuncio a Velocity: " + e.getMessage());
+            plugin.getLogger().severe("Could not send the announcement to Velocity: " + e.getMessage());
             broadcastLocally(null, platform, link, playerFormat);
         }
     }
 
-    /**
-     * Envía datos estructurados a través de Velocity
-     */
     private void sendToVelocity(String playerName, String platform, String link) throws Exception {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        // Formato estándar para Velocity/BungeeCord
         out.writeUTF("Forward");
         out.writeUTF("ALL");
         out.writeUTF("liveannounce:announce");
 
-        // Serializar datos del anuncio
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
         DataOutputStream msgout = new DataOutputStream(msgbytes);
 
@@ -127,17 +105,13 @@ public class VelocityBridge implements Bridge {
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
 
-        // Enviar usando el canal de Velocity
         Player player = plugin.getServer().getOnlinePlayers().iterator().next();
         player.sendPluginMessage(plugin, VELOCITY_CHANNEL, out.toByteArray());
     }
 
-    /**
-     * Fallback: envía solo en este servidor
-     */
     private void broadcastLocally(Player player, String playerName, String platform, String link) {
 
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
         List<Component> components = AnnouncementFormatter.createAnnouncement(null, platform, link, playerFormat);
 
         if (components == null || components.isEmpty()) return;

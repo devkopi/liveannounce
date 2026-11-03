@@ -2,6 +2,7 @@
 target/
 *.jar
 *.class
+dependency-reduced-pom.xml
 
 # Configuración local del servidor
 config.yml

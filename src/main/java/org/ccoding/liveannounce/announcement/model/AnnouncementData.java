@@ -16,7 +16,6 @@ public class AnnouncementData {
     private final String link;
     private final String channel;
 
-    // Constructor - Aquí se calcula todo
     public AnnouncementData(String playerName, String playerFormat, String platformName, String link) {
         this.playerName = playerName;
         this.playerFormat = playerFormat;
@@ -27,7 +26,6 @@ public class AnnouncementData {
         this.channel = ChannelExtractor.extract(link, playerFormat);
     }
 
-    // Getters
     public String getPlayerName() { return playerName;}
     public String getPlayerFormat() { return playerFormat; }
     public String getPlatformName() { return platformName; }
@@ -36,7 +34,6 @@ public class AnnouncementData {
     public String getLink() { return link; }
     public String getChannel() { return channel; }
 
-    // Reemplaza variables
     public String applyToTemplate(String template, Player player) {
         if ( template == null || template.isEmpty()) return "";
 
@@ -50,15 +47,13 @@ public class AnnouncementData {
         replaceAll(result, "{channel}", channel);
 
         String finalMessage = result.toString();
-        // PlaceholderAPI (solo si existe)
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        if (player != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             finalMessage = PlaceholderAPI.setPlaceholders(player, finalMessage);
         }
 
         return finalMessage;
     }
 
-    // Metodo auxiliar para reemplazar texto
     private void replaceAll(StringBuilder builder, String from, String to) {
         int index = builder.indexOf(from);
         while (index != -1) {

@@ -35,7 +35,7 @@ proxy:
 enabled: true
 prefix: "&8[&bLiveAnnounce&8] &7"
 # Supports PlaceholderAPI placeholders if installed
-player-format: "%vault_prefix% %player_name%"
+player-format: "%player_name%"
 
 # ========== CONFIGURABLE MESSAGES ==========
 messages:
@@ -123,3 +123,82 @@ discord:
     # Image URL (supports static images and GIFs)
     # Example GIF: https://i.pinimg.com/originals/54/ad/ed/54aded2832204ae26b6c57ddf7ad4854.gif
     image-url: "https://i.imgur.com/TDf945M.jpeg"
+
+# ========== ACTIVE LIVES (/la live) ==========
+# After someone announces, the stream stays on this list.
+# The list is kept in memory. Expired rows are deleted off the main thread.
+# Do not mix MiniMessage and legacy colors (&) in the same line.
+# If a line uses MiniMessage, do not use {color} (that placeholder is a legacy code).
+live-sessions:
+  enabled: true
+
+  # How long a stream stays listed, in seconds.
+  # 0 = no timer. Pair 0 with remove-on-quit: true.
+  # If both would keep rows forever, the plugin uses a 6 hour cap.
+  duration-seconds: 5400
+
+  # true = remove the stream when that player leaves this server.
+  # A stream announced on another server of the network is removed only by the timer.
+  remove-on-quit: false
+
+  # How often expired rows are deleted, in seconds. Minimum 10.
+  cleanup-interval-seconds: 30
+
+  # Rows printed in chat. The rest are counted, not printed. Maximum 50.
+  max-display: 10
+
+  messages:
+    disabled: "&cThe live list is disabled."
+    empty: "&7Nobody is live right now."
+    header: "&6&lLIVE NOW"
+    entry: "&f{player} &7on {color}{platform} &8• &e{channel} &8(&7{time}&8)"
+    hover: "&eClick to open the stream"
+    footer: "&7{count} live"
+    more: "&8+{count} more"
+    time-unlimited: "until disconnect"
+
+# ========== ON-SCREEN ANNOUNCEMENT ==========
+# Shown together with the chat announcement. Each part can be turned off.
+# Title times are ticks (20 ticks = 1 second). Caps: fade 40, stay 200.
+# Bossbar seconds are capped at 30. The bar is not refreshed every tick.
+# Do not mix MiniMessage and legacy colors (&) in the same line.
+# {color} is a legacy code, so use it only on a legacy line.
+display:
+  title:
+    enabled: true
+    title: "&e⚡ &f&lLIVE ON {platform_upper} &e⚡"
+    subtitle: "&f{player} &7is live on {platform}"
+    fade-in: 10
+    stay: 70
+    fade-out: 10
+
+  bossbar:
+    enabled: true
+    text: "&e⚡ &f{player} &7is live on {color}{platform}"
+    # PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+    color: YELLOW
+    # SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+    style: SOLID
+    progress: 1.0
+    seconds: 12
+
+# ========== ANNOUNCEMENT TOGGLE (/la toggle) ==========
+# Hides the chat announcement, the title and the bossbar for that player.
+# The choice is stored in muted-players.txt and written off the main thread.
+# /la live still works, because the player asked for the list.
+toggle:
+  muted: "&7Stream announcements are hidden. Use &f/la toggle &7to show them again."
+  unmuted: "&aStream announcements are visible again."
+
+# ========== CHRISTMAS ==========
+# A short seasonal line in the announcement, and a bossbar color while it is active.
+# mode: auto shows it between "from" and "to". mode: on forces it. mode: off hides it.
+# Unquoted on and off are valid. The date is checked when someone announces.
+# bossbar-color: none keeps the normal bossbar color.
+christmas:
+  enabled: true
+  mode: auto
+  from: "12-01"
+  to: "12-26"
+  line: "&f❄ &c&lHappy Holidays&f ❄"
+  bossbar-color: RED
