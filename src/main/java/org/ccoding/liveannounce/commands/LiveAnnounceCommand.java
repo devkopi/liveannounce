@@ -7,6 +7,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
+import org.ccoding.liveannounce.announcement.service.ChristmasGreeting;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.announcement.service.LiveSessionPresenter;
 import org.ccoding.liveannounce.managers.MessageManager;
@@ -82,6 +83,7 @@ public class LiveAnnounceCommand implements CommandExecutor, TabCompleter {
                 ChatUtils.sendMessage(sender, MessageManager.get(statusKey));
                 ChatUtils.sendMessage(sender, "&7Live now: &f" + LiveSessionManager.activeCount());
                 ChatUtils.sendMessage(sender, AnnouncementDisplay.statusLine());
+                ChatUtils.sendMessage(sender, ChristmasGreeting.statusLine());
                 ChatUtils.sendMessage(sender, "&7Muted players: &f" + MuteManager.count());
                 break;
 

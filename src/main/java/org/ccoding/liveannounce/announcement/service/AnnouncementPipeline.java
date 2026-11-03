@@ -40,6 +40,8 @@ public class AnnouncementPipeline {
             return;
         }
 
+        ChristmasGreeting.addLine(components, data, player);
+
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (MuteManager.isMuted(p.getUniqueId())) {
                 continue;

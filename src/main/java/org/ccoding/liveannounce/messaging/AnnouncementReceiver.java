@@ -9,6 +9,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
+import org.ccoding.liveannounce.announcement.service.ChristmasGreeting;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
 import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
@@ -41,7 +42,8 @@ public class AnnouncementReceiver implements PluginMessageListener {
             String playerFormat = localAnnouncer != null
                     ? LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%")
                     : playerName;
-            AnnouncementDisplay.show(localAnnouncer, new AnnouncementData(playerName, playerFormat, platform, link));
+            AnnouncementData announcement = new AnnouncementData(playerName, playerFormat, platform, link);
+            AnnouncementDisplay.show(localAnnouncer, announcement);
 
             List<Component> components = AnnouncementFormatter.createAnnouncement(
                     null, playerName, platform, link
@@ -50,6 +52,8 @@ public class AnnouncementReceiver implements PluginMessageListener {
             if (components == null || components.isEmpty()) {
                 return;
             }
+
+            ChristmasGreeting.addLine(components, announcement, localAnnouncer);
 
             // Enviar a todos los jugadores locales usando Adventure
             for (Player online : Bukkit.getOnlinePlayers()) {

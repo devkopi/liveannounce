@@ -148,7 +148,11 @@ public final class AnnouncementDisplay {
         hideActive();
 
         Component name = ChatUtils.format(data.applyToTemplate(bossbarText, source));
-        BossBar bar = BossBar.bossBar(name, bossbarProgress, bossbarColor, bossbarOverlay);
+        BossBar bar = BossBar.bossBar(
+                name,
+                bossbarProgress,
+                ChristmasGreeting.bossbarColor(bossbarColor),
+                bossbarOverlay);
         activeBar = bar;
 
         for (Player online : Bukkit.getOnlinePlayers()) {
