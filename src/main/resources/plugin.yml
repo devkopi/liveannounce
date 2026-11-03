@@ -16,7 +16,7 @@ commands:
 
   liveannounce:
     description: "Comandos principales del plugin"
-    usage: "/liveannounce [help|version|live]"
+    usage: "/liveannounce [help|version|live|toggle]"
     aliases: [la]
 
 permissions:
@@ -32,6 +32,10 @@ permissions:
     description: "Permite ver quién está en directo con /la live"
     default: true
 
+  liveannounce.toggle:
+    description: "Permite ocultar los anuncios de directos con /la toggle"
+    default: true
+
   liveannounce.admin:
     description: "Acceso total a todos los comandos de administración del plugin"
     default: op
@@ -39,6 +43,7 @@ permissions:
       liveannounce.directo: true
       liveannounce.directo.bypass.cooldown: true
       liveannounce.live: true
+      liveannounce.toggle: true
       liveannounce.admin.gui: true
       liveannounce.admin.history: true
 

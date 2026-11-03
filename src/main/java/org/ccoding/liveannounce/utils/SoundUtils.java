@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.ccoding.liveannounce.LiveAnnounce;
+import org.ccoding.liveannounce.managers.MuteManager;
 
 public class SoundUtils {
 
@@ -27,6 +28,9 @@ public class SoundUtils {
                 Sound sound = Sound.valueOf(soundName);
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (MuteManager.isMuted(player.getUniqueId())) {
+                        continue;
+                    }
                     player.playSound(player.getLocation(), sound, volume, pitch);
                 }
             } catch (IllegalArgumentException e) {

@@ -10,6 +10,7 @@ import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
 import org.ccoding.liveannounce.announcement.service.AnnouncementDisplay;
 import org.ccoding.liveannounce.announcement.service.LiveSessionManager;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 
 import java.util.List;
@@ -51,8 +52,13 @@ public class AnnouncementReceiver implements PluginMessageListener {
             }
 
             // Enviar a todos los jugadores locales usando Adventure
-            for (Component component : components) {
-                LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (MuteManager.isMuted(online.getUniqueId())) {
+                    continue;
+                }
+                for (Component component : components) {
+                    LiveAnnounce.getInstance().getAdventure().player(online).sendMessage(component);
+                }
             }
 
         } catch (Exception ignored) {}

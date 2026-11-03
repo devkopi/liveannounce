@@ -10,6 +10,7 @@ import org.ccoding.liveannounce.commands.LiveAnnounceCommand;
 import org.ccoding.liveannounce.listeners.LiveSessionListener;
 import org.ccoding.liveannounce.managers.CooldownManager;
 import org.ccoding.liveannounce.managers.MessageManager;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.managers.PrefixManager;
 import org.ccoding.liveannounce.messaging.ChannelManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
@@ -65,6 +66,7 @@ public class LiveAnnounce extends JavaPlugin {
         LiveSessionManager.load(getConfig(), getLogger());
         LiveSessionManager.startCleanup(this);
         AnnouncementDisplay.load(getConfig(), getLogger());
+        MuteManager.start(this);
         getServer().getPluginManager().registerEvents(new LiveSessionListener(), this);
 
         DirectoCommand directoCommand = new DirectoCommand();
@@ -93,6 +95,7 @@ public class LiveAnnounce extends JavaPlugin {
         getLogger().info("LiveAnnounce desactivado");
 
         AnnouncementDisplay.shutdown();
+        MuteManager.shutdown();
         LiveSessionManager.shutdown();
 
         if (this.adventure != null) {
@@ -146,6 +149,7 @@ public class LiveAnnounce extends JavaPlugin {
 
         LiveSessionManager.reload(this);
         AnnouncementDisplay.load(getConfig(), getLogger());
+        MuteManager.reload(getConfig());
     }
 
     public ChannelManager getChannelManager() {

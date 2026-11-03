@@ -7,6 +7,7 @@ import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.proxy.Bridge;
 import org.ccoding.liveannounce.proxy.BridgeManager;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class AnnouncementPipeline {
         }
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            if (MuteManager.isMuted(p.getUniqueId())) {
+                continue;
+            }
             for (Component component : components) {
                 LiveAnnounce.getInstance().getAdventure().player(p).sendMessage(component);
             }

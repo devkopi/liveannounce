@@ -181,3 +181,11 @@ display:
     style: SOLID
     progress: 1.0
     seconds: 12
+
+# ========== ANNOUNCEMENT TOGGLE (/la toggle) ==========
+# Hides the chat announcement, the title and the bossbar for that player.
+# The choice is stored in muted-players.txt and written off the main thread.
+# /la live still works, because the player asked for the list.
+toggle:
+  muted: "&7Stream announcements are hidden. Use &f/la toggle &7to show them again."
+  unmuted: "&aStream announcements are visible again."

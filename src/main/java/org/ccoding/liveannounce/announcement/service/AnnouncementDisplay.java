@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.ccoding.liveannounce.LiveAnnounce;
 import org.ccoding.liveannounce.announcement.model.AnnouncementData;
+import org.ccoding.liveannounce.managers.MuteManager;
 import org.ccoding.liveannounce.utils.ChatUtils;
 
 import java.util.Locale;
@@ -115,7 +116,27 @@ public final class AnnouncementDisplay {
         // The server sends the title packet for its own version.
         // The shaded Adventure title path targets an old Paper API current servers no longer have.
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (MuteManager.isMuted(online.getUniqueId())) {
+                continue;
+            }
             online.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+        }
+    }
+
+    public static void onMuteChanged(Player player, boolean muted) {
+        if (player == null) {
+            return;
+        }
+        if (muted) {
+            player.resetTitle();
+        }
+        if (activeBar == null || LiveAnnounce.getInstance().getAdventure() == null) {
+            return;
+        }
+        if (muted) {
+            LiveAnnounce.getInstance().getAdventure().player(player).hideBossBar(activeBar);
+        } else {
+            LiveAnnounce.getInstance().getAdventure().player(player).showBossBar(activeBar);
         }
     }
 
@@ -131,6 +152,9 @@ public final class AnnouncementDisplay {
         activeBar = bar;
 
         for (Player online : Bukkit.getOnlinePlayers()) {
+            if (MuteManager.isMuted(online.getUniqueId())) {
+                continue;
+            }
             LiveAnnounce.getInstance().getAdventure().player(online).showBossBar(bar);
         }
 
