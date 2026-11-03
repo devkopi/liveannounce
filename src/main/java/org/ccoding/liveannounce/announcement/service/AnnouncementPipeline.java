@@ -16,7 +16,7 @@ public class AnnouncementPipeline {
         Bukkit.getScheduler().runTaskAsynchronously(
                 LiveAnnounce.getInstance(),
                 () -> {
-                    String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+                    String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
                     AnnouncementData data = new AnnouncementData(player.getName(), playerFormat, platformName, link);
                     org.ccoding.liveannounce.discord.DiscordManager.sendWebhook(data);
                     Bukkit.getScheduler().runTask(

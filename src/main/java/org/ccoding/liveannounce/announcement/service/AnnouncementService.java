@@ -21,7 +21,7 @@ public class AnnouncementService {
      */
     public static void broadcastAnnouncement(Player player, String platformName, String link) {
 
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
         // Creamos los componentes del anuncio
         List<Component> components = AnnouncementFormatter.createAnnouncement(
                 player,

@@ -38,7 +38,7 @@ public class AnnouncementReceiver implements PluginMessageListener {
 
             Player localAnnouncer = Bukkit.getPlayerExact(playerName);
             String playerFormat = localAnnouncer != null
-                    ? LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%")
+                    ? LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%")
                     : playerName;
             AnnouncementDisplay.show(localAnnouncer, new AnnouncementData(playerName, playerFormat, platform, link));
 

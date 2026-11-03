@@ -75,7 +75,7 @@ public class VelocityBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
         // Verificar disponibilidad ANTES de enviar
         if (!isAvailable()) {
             // No logueamos nada aquí para no spamear
@@ -137,7 +137,7 @@ public class VelocityBridge implements Bridge {
      */
     private void broadcastLocally(Player player, String playerName, String platform, String link) {
 
-        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%vault_prefix% %player_name%");
+        String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
         List<Component> components = AnnouncementFormatter.createAnnouncement(null, platform, link, playerFormat);
 
         if (components == null || components.isEmpty()) return;
