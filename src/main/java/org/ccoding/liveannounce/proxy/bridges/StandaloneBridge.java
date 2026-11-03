@@ -26,7 +26,7 @@ public class StandaloneBridge implements Bridge {
 
     @Override
     public void broadcastAnnouncement(String playerName, String platform, String link) {
-        // En Standalone, el broadcast ya lo maneja el AnnouncementPipeline
+        // Standalone announcements are already sent by AnnouncementPipeline.
     }
 
     private void broadcastLocally(String playerName, String platform, String link) {

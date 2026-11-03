@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Crea anuncios de stream usando componentes de chat modernos (Adventure)
- * Ahora mucho más optimizado y organizado
+ * Builds the chat lines for a stream announcement.
  */
 public class AnnouncementFormatter {
 
-    // Enumeración para identificar cada parte del formato
     private enum FormatKey {
         LINE1, TITLE, DESCRIPTION, LINK, HOVER, LINE2;
 
@@ -30,13 +28,9 @@ public class AnnouncementFormatter {
     private static final String[] FORMATS = new String[FormatKey.values().length];
     private static boolean initialized = false;
 
-    // Constructor privado - no se puede instanciar
     private AnnouncementFormatter() {
     }
 
-    /**
-     * Carga los formatos desde la configuración
-     */
     public static void initialize(FileConfiguration config) {
         if (initialized)
             return;
@@ -52,15 +46,12 @@ public class AnnouncementFormatter {
         initialized = true;
     }
 
-    /**
-     * Valores por defecto si no hay configuración
-     */
     private static String getDefaultFormat(FormatKey key) {
         switch (key) {
             case LINE1:
                 return "&8&m--------------------------------------------------";
             case TITLE:
-                return "&f⚡ {color}&l¡LIVE ON {platform_upper}! &f⚡";
+                return "&f{color}&lLIVE ON {platform_upper}! &f";
             case DESCRIPTION:
                 return "&f{player} &7is now streaming live";
             case LINK:
@@ -74,21 +65,16 @@ public class AnnouncementFormatter {
         }
     }
 
-    /**
-     * Crea un anuncio completo
-     */
     public static List<Component> createAnnouncement(Player player,
             String platformName,
             String link,
             String playerFormat) {
-        // Verificar que esté inicializado
         if (!initialized) {
             LiveAnnounce.getInstance().getLogger().warning(
                     "AnnouncementFormatter not initialized!");
             return new ArrayList<>();
         }
 
-        // Crear objeto con todos los datos
         AnnouncementData data = new AnnouncementData(
                 player != null ? player.getName() : "Unknown",
                 playerFormat,
@@ -109,8 +95,6 @@ public class AnnouncementFormatter {
         return components;
     }
 
-    // ========== MÉTODOS PRIVADOS ==========
-
     private static Component createFormattedLine(String template, AnnouncementData data, Player player) {
         String text = data.applyToTemplate(template, player);
         return ChatUtils.format(text);
@@ -125,7 +109,6 @@ public class AnnouncementFormatter {
 
         Component component = ChatUtils.format(linkText);
         
-        // Añadir eventos si hay link
         if (data.getLink() != null && !data.getLink().isEmpty()) {
             component = component.clickEvent(ClickEvent.openUrl(data.getLink()));
             component = component.hoverEvent(HoverEvent.showText(ChatUtils.format(hoverText)));
@@ -134,11 +117,7 @@ public class AnnouncementFormatter {
         return component;
     }
 
-    /**
-     * Recarga los formatos
-     */
     public static void reload(FileConfiguration config) {
-        // Limpiar array
         for (int i = 0; i < FORMATS.length; i++) {
             FORMATS[i] = null;
         }
@@ -146,20 +125,13 @@ public class AnnouncementFormatter {
         initialized = false;
         initialize(config);
 
-        // Limpiar cache de colores
         ColorCache.clear();
     }
 
-    /**
-     * Verifica si está inicializado
-     */
     public static boolean isInitialized() {
         return initialized;
     }
 
-    /**
-     * Obtiene cantidad de formatos cargados
-     */
     public static int getFormatCount() {
         return FORMATS.length;
     }

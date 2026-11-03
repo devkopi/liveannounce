@@ -11,7 +11,7 @@ public class SoundUtils {
     private static final LiveAnnounce plugin = LiveAnnounce.getInstance();
 
     /**
-     * Reproduce un sonido a todos los jugadores online
+     * Plays a sound for every online player who has not muted announcements.
      */
     public static void playSoundToAll(String soundKey) {
         if (!plugin.getConfig().getBoolean("sounds.enabled", true)) {
@@ -22,7 +22,6 @@ public class SoundUtils {
         float volume = (float) plugin.getConfig().getDouble("sounds." + soundKey + ".volume", 1.0);
         float pitch = (float) plugin.getConfig().getDouble("sounds." + soundKey + ".pitch", 1.0);
 
-        // Ejecutar en el thread principal (Bukkit requiere esto para sonidos)
         Bukkit.getScheduler().runTask(plugin, () -> {
             try {
                 Sound sound = Sound.valueOf(soundName);
@@ -40,7 +39,7 @@ public class SoundUtils {
     }
 
     /**
-     * Reproduce un sonido a un jugador específico
+     * Plays a sound for one player.
      */
     public static void playSoundToPlayer(Player player, String soundKey) {
         if (!plugin.getConfig().getBoolean("sounds.enabled", true) || player == null) {

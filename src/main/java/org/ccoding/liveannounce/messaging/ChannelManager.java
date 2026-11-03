@@ -10,32 +10,23 @@ public class ChannelManager {
     private final JavaPlugin plugin;
     private final Set<String> registeredChannels = new HashSet<>();
 
-    // Canales personalizados
     public static final String CHANNEL_ANNOUNCE = "liveannounce:announce";
-    // private String activeBungeeChannel = null; // BungeeCord deshabilitado
 
     public ChannelManager(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void registerChannels() {
-        // Registrar canal personalizado
         registerIncomingChannel(CHANNEL_ANNOUNCE, new AnnouncementReceiver());
 
-        // Velocity solo si es Paper
         if (isPaperServer()) {
             registerVelocityChannel();
         }
     }
 
-    /**
-     * NO registramos canal BungeeCord explícitamente.
-     * En su lugar, obtenemos el canal cuando lo necesitamos.
-     */
-    /* BungeeCord deshabilitado
+    /* BungeeCord channel registration is disabled.
     public String getBungeeCordChannel() {
         if (activeBungeeChannel == null) {
-            // Detectar el canal apropiado según la versión
             if (isPaperModern()) {
                 activeBungeeChannel = "bungeecord:main";
             } else {
@@ -46,9 +37,6 @@ public class ChannelManager {
     }
     */
 
-    /**
-     * Registra canal de Velocity
-     */
     private void registerVelocityChannel() {
         try {
             String velocityChannel = "velocity:announce";
@@ -58,9 +46,6 @@ public class ChannelManager {
         } catch (Exception ignored) {}
     }
 
-    /**
-     * Registra canal de entrada
-     */
     private void registerIncomingChannel(String channel, AnnouncementReceiver receiver) {
         try {
             plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, channel, receiver);
@@ -71,9 +56,6 @@ public class ChannelManager {
         }
     }
 
-    /**
-     * Verifica si estamos en Paper
-     */
     private boolean isPaperServer() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
@@ -83,13 +65,9 @@ public class ChannelManager {
         }
     }
 
-    /**
-     * Verifica si es Paper moderno (1.20.4+)
-     */
-    /* No necesario sin BungeeCord
+    /* Kept for a future BungeeCord bridge. Not used.
     private boolean isPaperModern() {
         try {
-            // Intentar detectar versión
             String version = plugin.getServer().getVersion();
             return version.contains("1.20.4") ||
                     version.contains("1.21") ||

@@ -35,7 +35,6 @@ public class DirectoCommand implements CommandExecutor, TabCompleter {
 
         CooldownManager cooldown = LiveAnnounce.getInstance().getAnnouncementCooldown();
 
-        // Verificar si el jugador tiene permiso para saltarse el cooldown
         boolean hasBypass = player.hasPermission("liveannounce.directo.bypass.cooldown") || player.isOp();
 
         if (!hasBypass && cooldown != null && !cooldown.canUse(player.getUniqueId())) {
@@ -57,26 +56,21 @@ public class DirectoCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // Unir todos los argumentos (el link)
         String link = String.join(" ", args);
 
-        // Verificar que sea un link válido
         if (!isValidLink(link)) {
             ChatUtils.sendMessage(player, MessageManager.get("invalid-link"));
             ChatUtils.sendMessage(player, MessageManager.get("invalid-link-example"));
             return true;
         }
 
-        // Detectar plataforma (SOLO EL NOMBRE, NO EL COLOR)
         String platformName = detectPlatform(link);
 
-        // ENVIAR BROADCAST (sin color - lo obtiene automáticamente)
         AnnouncementPipeline.execute(
                 player,
                 platformName,
                 link);
 
-        // Reproducir sonido al jugador que ejecutó el comando
         if (plugin.getConfig().getBoolean("sounds.notify-sender", true)) {
             SoundUtils.playSoundToPlayer(player, "success");
         }
@@ -92,7 +86,6 @@ public class DirectoCommand implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    // Validar link básico
     private boolean isValidLink(String url) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             return false;
@@ -106,7 +99,6 @@ public class DirectoCommand implements CommandExecutor, TabCompleter {
                 lower.contains("tiktok.com/");
     }
 
-    // Detectar plataforma (Devuelve solo String)
     private String detectPlatform(String url) {
         String lower = url.toLowerCase();
 

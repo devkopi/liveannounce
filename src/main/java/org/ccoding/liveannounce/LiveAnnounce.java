@@ -29,30 +29,23 @@ public class LiveAnnounce extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // Inicializar Adventure para soporte de mensajes modernos
         this.adventure = BukkitAudiences.create(this);
         this.miniMessage = MiniMessage.miniMessage();
 
-        // Inicializador gestor de canales
         channelManager = new ChannelManager(this);
         channelManager.registerChannels();
 
-
-        // Guardar config por defecto
         saveDefaultConfig();
         reloadConfig();
 
-        // Inicializar BridgeManager para manejar proxy (BungeeCord/Velocity)
         org.ccoding.liveannounce.proxy.BridgeManager.initialize(this);
 
-        // Cargamos los managers
         PrefixManager.load(getConfig());
         MessageManager.setup(getConfig());
         AnnouncementFormatter.initialize(getConfig());
 
-        // Verificar si el plugin está habilitado
         if (!getConfig().getBoolean("enabled", true)) {
-            getLogger().warning("Plugin deshabilitado en config.yml");
+            getLogger().warning("Plugin disabled in config.yml");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -94,7 +87,7 @@ public class LiveAnnounce extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getLogger().info("LiveAnnounce desactivado");
+        getLogger().info("LiveAnnounce disabled");
 
         AnnouncementDisplay.shutdown();
         MuteManager.shutdown();
@@ -105,7 +98,6 @@ public class LiveAnnounce extends JavaPlugin {
             this.adventure = null;
         }
 
-        // Limpiar canales si están registrados
         if (channelManager != null) {
             channelManager.unregisterChannels();
         }
@@ -128,18 +120,14 @@ public class LiveAnnounce extends JavaPlugin {
     }
 
     public void reloadPlugin() {
-        // Recargar configuración
         reloadConfig();
 
-        // Recargar el BridgeManager para detectar cambios en la configuración del proxy
         BridgeManager.reload(this);
 
-        // Managers
         PrefixManager.load(getConfig());
         MessageManager.reload(getConfig());
         AnnouncementFormatter.reload(getConfig());
 
-        // Recarga cooldown
         boolean cooldownEnabled = getConfig().getBoolean("cooldown.enabled", true);
         int cooldownSeconds = getConfig().getInt("cooldown.seconds", 30);
 

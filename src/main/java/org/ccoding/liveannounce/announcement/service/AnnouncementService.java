@@ -10,19 +10,17 @@ import org.ccoding.liveannounce.utils.SoundUtils;
 import java.util.List;
 
 /**
- * Esta clase es responsable de manejar el flujo completo
- * de un anuncio de stream
+ * Builds and sends one stream announcement.
  */
 public class AnnouncementService {
 
     /**
-     * @param platformName Nombre de la plataformas
-     * @param link Enlace del stream
+     * @param platformName platform name
+     * @param link stream URL
      */
     public static void broadcastAnnouncement(Player player, String platformName, String link) {
 
         String playerFormat = LiveAnnounce.getInstance().getConfig().getString("player-format", "%player_name%");
-        // Creamos los componentes del anuncio
         List<Component> components = AnnouncementFormatter.createAnnouncement(
                 player,
                 platformName,
@@ -30,18 +28,15 @@ public class AnnouncementService {
                 playerFormat
         );
 
-        // Si algo salió mal, se sigue
         if (components == null || components.isEmpty()) {
             Bukkit.getLogger().warning("[LiveAnnounce] No se pudieron crear los componentes del anuncio.");
             return;
         }
 
-        // Enviamos el mensaje a todos los jugadores usando Adventure
         for (Component component : components) {
             LiveAnnounce.getInstance().getAdventure().all().sendMessage(component);
         }
 
-        // Reproducir el sonido
         SoundUtils.playSoundToAll("announce");
     }
 }

@@ -23,11 +23,11 @@ public class BungeeCordBridge implements Bridge {
     }
 
     private void initialize() {
-        // Verificar disponibilidad
+        // Check availability
         available = plugin.getServer().spigot().getConfig().getBoolean("settings.bungeecord", false);
 
         if (available) {
-            plugin.getLogger().info("✓ Bridge BungeeCord disponible");
+            plugin.getLogger().info("BungeeCord bridge available");
         }
     }
 
@@ -47,19 +47,19 @@ public class BungeeCordBridge implements Bridge {
         Collection<? extends Player> onlinePlayers = plugin.getServer().getOnlinePlayers();
 
         if (onlinePlayers.isEmpty()) {
-            plugin.getLogger().warning("No hay jugadores para enviar anuncio a BungeeCord");
+            plugin.getLogger().warning("No player is online to forward the announcement to BungeeCord");
             return;
         }
 
         try {
-            // ENVIAR UNA SOLA VEZ a través de BungeeCord
+            // Send once through BungeeCord
             sendToOtherServers(playerName, platform, link);
 
-            // NO hacer broadcast local - AnnouncementReceiver lo mostrará cuando llegue
-            plugin.getLogger().info("✓ Anuncio enviado a red BungeeCord");
+            // The receiving server prints the announcement. Do not print it here.
+            plugin.getLogger().info("Announcement sent to the BungeeCord network");
 
         } catch (Exception e) {
-            plugin.getLogger().severe("Error enviando anuncio a BungeeCord: " + e.getMessage());
+            plugin.getLogger().severe("Could not send the announcement to BungeeCord: " + e.getMessage());
             broadcastLocally(playerName, platform, link);
         }
     }

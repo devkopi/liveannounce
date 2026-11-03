@@ -17,14 +17,13 @@ import org.ccoding.liveannounce.utils.AnnouncementFormatter;
 import java.util.List;
 
 /**
- * Recibe anuncios de otros servidores a través del proxy
+ * Receives announcements from other servers through the proxy.
  */
 public class AnnouncementReceiver implements PluginMessageListener {
     private static final String CUSTOM_CHANNEL = "liveannounce:announce";
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        // Solo procesar nuestro canal personalizado
         if (!channel.equals(CUSTOM_CHANNEL)) {
             return;
         }
@@ -55,7 +54,6 @@ public class AnnouncementReceiver implements PluginMessageListener {
 
             ChristmasGreeting.addLine(components, announcement, localAnnouncer);
 
-            // Enviar a todos los jugadores locales usando Adventure
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (MuteManager.isMuted(online.getUniqueId())) {
                     continue;

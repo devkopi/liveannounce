@@ -193,7 +193,7 @@ toggle:
 # ========== CHRISTMAS ==========
 # A short seasonal line in the announcement, and a bossbar color while it is active.
 # mode: auto shows it between "from" and "to". mode: on forces it. mode: off hides it.
-# Set mode: on to preview it before December. The date is checked when someone announces.
+# Unquoted on and off are valid. The date is checked when someone announces.
 # bossbar-color: none keeps the normal bossbar color.
 christmas:
   enabled: true

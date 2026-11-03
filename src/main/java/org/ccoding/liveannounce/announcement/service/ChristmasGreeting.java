@@ -35,16 +35,7 @@ public final class ChristmasGreeting {
 
     public static void load(FileConfiguration config, Logger logger) {
         enabled = config.getBoolean("christmas.enabled", true);
-        String configuredMode = config.getString("christmas.mode", "auto");
-        if (configuredMode == null) {
-            configuredMode = "auto";
-        }
-        String normalized = configuredMode.trim().toLowerCase(Locale.ROOT);
-        if (!"auto".equals(normalized) && !"on".equals(normalized) && !"off".equals(normalized)) {
-            logger.warning("christmas.mode must be auto, on, or off. Using auto.");
-            normalized = "auto";
-        }
-        mode = normalized;
+        mode = readMode(config.get("christmas.mode"), logger);
         from = parseDay(config.getString("christmas.from", "12-01"), DEFAULT_FROM, "christmas.from", logger);
         to = parseDay(config.getString("christmas.to", "12-26"), DEFAULT_TO, "christmas.to", logger);
         line = config.getString("christmas.line", "&f❄ &c&lHappy Holidays&f ❄");
@@ -92,6 +83,30 @@ public final class ChristmasGreeting {
             return "&7Christmas: &aOn";
         }
         return "&7Christmas: &7Scheduled";
+    }
+
+    /**
+     * YAML reads an unquoted on/off as a boolean, so mode: on arrives as true.
+     */
+    private static String readMode(Object raw, Logger logger) {
+        if (raw == null) {
+            return "auto";
+        }
+        if (raw instanceof Boolean) {
+            return ((Boolean) raw).booleanValue() ? "on" : "off";
+        }
+        String normalized = String.valueOf(raw).trim().toLowerCase(Locale.ROOT);
+        if ("on".equals(normalized) || "true".equals(normalized) || "yes".equals(normalized)) {
+            return "on";
+        }
+        if ("off".equals(normalized) || "false".equals(normalized) || "no".equals(normalized)) {
+            return "off";
+        }
+        if ("auto".equals(normalized)) {
+            return "auto";
+        }
+        logger.warning("christmas.mode must be auto, on, or off. Using auto.");
+        return "auto";
     }
 
     private static MonthDay parseDay(String raw, MonthDay fallback, String path, Logger logger) {

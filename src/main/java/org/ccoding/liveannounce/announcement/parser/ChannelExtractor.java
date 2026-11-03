@@ -24,7 +24,7 @@ public class ChannelExtractor {
     };
 
     /**
-     * Extrae el nombre del canal de la URL
+     * Reads the channel name from a stream URL.
      */
     public static String extract(String link, String defaultChannel) {
         if (link == null || link.isEmpty()) return defaultChannel;
@@ -40,7 +40,7 @@ public class ChannelExtractor {
     }
 
     /**
-     * Detecta la plataforma de streaming basándose en la URL
+     * Detects the streaming platform from a URL.
      */
     public static String detectPlatform(String url) {
         if (url == null) return "unknown";

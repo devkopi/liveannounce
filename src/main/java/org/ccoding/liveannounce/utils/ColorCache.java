@@ -17,13 +17,9 @@ public class ColorCache {
         startConfigWatcher();
     }
 
-    /**
-     * Obtiene el color de una plataforma (con cache inteligente)
-     */
     public static String getPlatformColor(String platformKey) {
         String key = platformKey.toLowerCase();
 
-        // Si la config cambió, limpiar cache para ESTA plataforma
         if (configChanged && CACHE.containsKey(key)) {
             CACHE.remove(key);
             configChanged = false;
@@ -32,15 +28,11 @@ public class ColorCache {
         return CACHE.computeIfAbsent(key, ColorCache::loadColor);
     }
 
-    /**
-     * Monitorea cambios en config.yml SIN leer constantemente
-     */
     private static void startConfigWatcher() {
         try {
             watchService = FileSystems.getDefault().newWatchService();
             Path configDir = LiveAnnounce.getInstance().getDataFolder().toPath();
 
-            // Solo escuchar CREAR y MODIFICAR archivos
             configDir.register(watchService,
                     StandardWatchEventKinds.ENTRY_MODIFY,
                     StandardWatchEventKinds.ENTRY_CREATE);
@@ -48,7 +40,7 @@ public class ColorCache {
             watchThread = new Thread(() -> {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
-                        WatchKey key = watchService.take(); // Espera pasiva (NO CONSUME CPU)
+                        WatchKey key = watchService.take();
 
                         for (WatchEvent<?> event : key.pollEvents()) {
                             Path changedFile = (Path) event.context();
@@ -56,7 +48,7 @@ public class ColorCache {
                             if ("config.yml".equals(changedFile.toString())) {
                                 configChanged = true;
                                 LiveAnnounce.getInstance().getLogger().fine(
-                                        "Config.yml modificado - cache invalidada"
+                                        "config.yml changed. Color cache cleared."
                                 );
                             }
                         }
@@ -67,7 +59,7 @@ public class ColorCache {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
                     LiveAnnounce.getInstance().getLogger().warning(
-                            "Error en watcher de config: " + e.getMessage()
+                            "Config watcher failed: " + e.getMessage()
                     );
                 }
             }, "Config-Watcher");
@@ -77,14 +69,11 @@ public class ColorCache {
 
         } catch (IOException e) {
             LiveAnnounce.getInstance().getLogger().warning(
-                    "No se pudo iniciar watcher de config: " + e.getMessage()
+                    "Could not start the config watcher: " + e.getMessage()
             );
         }
     }
 
-    /**
-     * Lee el color desde la configuración (solo cuando es necesario)
-     */
     private static String loadColor(String key) {
         String color = LiveAnnounce.getInstance().getConfig()
                 .getString("platform-colors." + key, "");
@@ -94,7 +83,6 @@ public class ColorCache {
                     .getString("platform-colors.default", DEFAULT_COLOR);
         }
 
-        // Normalizar color
         if (!color.startsWith("&") && !color.isEmpty()) {
             color = "&" + color;
         }
@@ -104,17 +92,11 @@ public class ColorCache {
                 : DEFAULT_COLOR;
     }
 
-    /**
-     * Limpia toda la cache (para reload manual)
-     */
     public static void clear() {
         CACHE.clear();
         configChanged = false;
     }
 
-    /**
-     * Detiene el watcher al desactivar el plugin
-     */
     public static void shutdown() {
         if (watchThread != null) {
             watchThread.interrupt();

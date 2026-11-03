@@ -21,12 +21,8 @@ public class ChatUtils {
             .useUnusualXRepeatedCharacterHexFormat()
             .build();
 
-    // ========== MÉTODOS DE COLORES ==========
-
     /**
-     * Convierte un texto con códigos legacy (&) o MiniMessage a un Component de Adventure.
-     * @param text El texto a procesar.
-     * @return El componente resultante.
+     * Turns a legacy or MiniMessage string into an Adventure component.
      */
 
     private static final MiniMessage mm = MiniMessage.miniMessage();
@@ -34,17 +30,15 @@ public class ChatUtils {
     public static Component format(String text) {
         if (text == null || text.isEmpty()) return Component.empty();
 
-        // Detecta si usa MiniMessage
         if (text.contains("<") && text.contains(">")) {
             return mm.deserialize(text);
         }
 
-        // Si NO, usa Legacy (&)
         return LEGACY_SERIALIZER.deserialize(text);
     }
 
     /**
-     * Texto con el formato que Bukkit espera en sendTitle (códigos de sección).
+     * Legacy text with section signs, for Bukkit sendTitle.
      */
     public static String toBukkitText(Component component) {
         if (component == null) {
@@ -54,8 +48,7 @@ public class ChatUtils {
     }
 
     /**
-     * Traduce códigos de color legacy (&) a String coloreado de Bukkit.
-     * @deprecated Usar {@link #format(String)} para obtener un Component de Adventure.
+     * @deprecated Use {@link #format(String)}.
      */
     @Deprecated
     public static String color(String text) {
@@ -63,7 +56,6 @@ public class ChatUtils {
         return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    // Enviar mensaje (Metodo para NO APLICAR prefijo a mensajes)
     public static void send(CommandSender sender, String message) {
         if (sender != null && message != null) {
             send(sender, format(message));
@@ -81,14 +73,12 @@ public class ChatUtils {
         }
     }
 
-    // Metodo para aplicarle prefijo a los mensajes
     public static void sendMessage(CommandSender sender, String message) {
         if (sender != null && message != null) {
             send(sender, PrefixManager.get() + message);
         }
     }
 
-    // Broadcast a todos los jugadores (Sin prefijo para los anuncios)
     public static void broadcast(String message) {
         if (message != null) {
             LiveAnnounce.getInstance().getAdventure().all().sendMessage(format(message));
@@ -96,9 +86,6 @@ public class ChatUtils {
     }
 
 
-    // ========== FORMATOS Y DECORACIONES ==========
-
-    // Línea separadora
     public static String getLine() {
         return "&8&m--------------------------------------------------";
     }
